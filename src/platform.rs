@@ -346,7 +346,7 @@ pub fn protect(text: &str) -> Result<Vec<u8>, String> {
             &mut output,
         ) == 0
         {
-            return Err("Windows could not protect the Telegram token".into());
+            return Err("Windows could not protect the credential".into());
         }
         let bytes = std::slice::from_raw_parts(output.pbData, output.cbData as usize).to_vec();
         LocalFree(output.pbData as *mut c_void);
@@ -373,7 +373,10 @@ pub fn unprotect(bytes: &[u8]) -> Result<String, String> {
             &mut output,
         ) == 0
         {
-            return Err("The saved Telegram token cannot be decrypted by this Windows account. Enter it again.".into());
+            return Err(
+                "The saved credential cannot be decrypted by this Windows account. Enter it again."
+                    .into(),
+            );
         }
         let result = String::from_utf8(
             std::slice::from_raw_parts(output.pbData, output.cbData as usize).to_vec(),
