@@ -1,4 +1,6 @@
 use crate::{
+    capture::Capture,
+    import_ui::Importer,
     model::{Cycle, Subscription},
     platform::{self, Platform},
     reminders,
@@ -8,6 +10,12 @@ use crate::{
 use chrono::Local;
 use eframe::egui::{self, Color32, RichText};
 use std::sync::{Arc, Mutex, atomic::Ordering};
+
+pub struct Launch {
+    pub capture_dir: Option<std::path::PathBuf>,
+    pub image: Option<std::path::PathBuf>,
+    pub recognize: bool,
+}
 
 const BG: Color32 = Color32::from_rgb(17, 21, 32);
 const PANEL: Color32 = Color32::from_rgb(24, 29, 43);
@@ -36,6 +44,8 @@ pub struct App {
     autostart: bool,
     notice: String,
     task_status: Arc<Mutex<Option<String>>>,
+    importer: Importer,
+    capture: Option<Capture>,
 }
 
 impl App {
@@ -44,6 +54,7 @@ impl App {
         store: Arc<Mutex<Store>>,
         platform: Arc<Platform>,
         hwnd: isize,
+        launch: Launch,
     ) -> Self {
         let mut style = (*cc.egui_ctx.style()).clone();
         style.visuals = egui::Visuals::dark();
@@ -53,6 +64,8 @@ impl App {
         style.visuals.selection.bg_fill = Color32::from_rgb(54, 76, 139);
         style.visuals.widgets.inactive.bg_fill = CARD;
         style.visuals.widgets.inactive.weak_bg_fill = CARD;
+        style.visuals.widgets.inactive.bg_stroke =
+            egui::Stroke::new(1., Color32::from_rgb(71, 84, 111));
         style.visuals.widgets.hovered.bg_fill = Color32::from_rgb(48, 59, 83);
         style.visuals.widgets.active.bg_fill = Color32::from_rgb(59, 78, 129);
         style.spacing.item_spacing = egui::vec2(10., 10.);
@@ -78,11 +91,20 @@ impl App {
         if draft.startup_update_check {
             updates::check(updates.clone(), cc.egui_ctx.clone());
         }
+        let mut importer = Importer::new(&draft.ai);
+        let page = if let Some(path) = &launch.image {
+            if importer.load_file(path, &cc.egui_ctx) && launch.recognize {
+                importer.recognize(&store, &cc.egui_ctx);
+            }
+            1
+        } else {
+            0
+        };
         Self {
             store,
             platform,
             updates,
-            page: 0,
+            page,
             filter: 0,
             search: String::new(),
             editor: None,
@@ -92,6 +114,8 @@ impl App {
             autostart: platform::autostart_enabled(),
             notice: String::new(),
             task_status: Arc::new(Mutex::new(None)),
+            importer,
+            capture: launch.capture_dir.map(Capture::new),
         }
     }
 
@@ -109,7 +133,10 @@ impl App {
                         .size(16.),
                 );
                 ui.add_space(26.);
-                for (i, title) in ["Subscriptions", "Settings"].iter().enumerate() {
+                for (i, title) in ["Subscriptions", "Image import", "Settings"]
+                    .iter()
+                    .enumerate()
+                {
                     if ui
                         .add_sized(
                             [152., 42.],
@@ -163,6 +190,9 @@ impl App {
                         original: None,
                         error: String::new(),
                     });
+                }
+                if ui.button("Import image...").clicked() {
+                    self.page = 1;
                 }
             });
         });
@@ -281,10 +311,23 @@ impl App {
     }
 
     fn settings(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
-        ui.heading("Settings");
+        ui.horizontal(|ui| {
+            ui.heading("Settings");
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                if ui
+                    .add(egui::Button::new("Save settings").fill(Color32::from_rgb(65, 89, 188)))
+                    .clicked()
+                {
+                    self.save_settings();
+                }
+            });
+        });
         ui.label(RichText::new("Make reminders work your way.").color(MUTED));
         ui.add_space(20.);
-        egui::ScrollArea::vertical().show(ui, |ui| {
+        let bottom = self.capture.as_ref().is_some_and(Capture::bottom);
+        let scroll = egui::ScrollArea::vertical().id_salt("settings-scroll");
+        scroll.show(ui, |ui| {
+            section(ui, "AI · image import", |ui| { self.importer.settings(ui, &mut self.draft.ai, ctx); });
             section(ui, "Reminders", |ui| {
                 ui.checkbox(&mut self.draft.windows_notifications, "Windows notifications");
                 ui.label(RichText::new("Checked every 30 seconds. One reminder per day until renewed or paused.").small().color(MUTED));
@@ -341,19 +384,34 @@ impl App {
                     }
                 }
             });
-            if ui.add(egui::Button::new("Save settings").fill(Color32::from_rgb(65, 89, 188))).clicked() {
-                let result = (|| -> Result<(), String> {
-                    if self.draft.telegram_enabled && (self.token.trim().is_empty() || self.draft.telegram_chat_id.trim().is_empty()) { return Err("Enter a Telegram token and chat ID, or disable Telegram reminders.".into()); }
-                    self.draft.telegram_token_protected = platform::protect(self.token.trim())?;
-                    let mut store = self.store.lock().unwrap(); let previous = store.settings.clone();
-                    let mut next = self.draft.clone(); next.deliveries = store.settings.deliveries.clone(); next.data_dir = store.settings.data_dir.clone();
-                    store.settings = next;
-                    if let Err(e) = store.save_settings() { store.settings = previous; return Err(e); }
-                    Ok(())
-                })();
-                self.notice = result.err().unwrap_or_else(|| "Settings saved.".into());
-            }
+            if bottom { ui.scroll_to_cursor_animation(Some(egui::Align::BOTTOM), egui::style::ScrollAnimation::none()); }
         });
+    }
+
+    fn save_settings(&mut self) {
+        let result = (|| -> Result<(), String> {
+            self.importer.encrypt_keys(&mut self.draft.ai)?;
+            if self.draft.telegram_enabled
+                && (self.token.trim().is_empty() || self.draft.telegram_chat_id.trim().is_empty())
+            {
+                return Err(
+                    "Enter a Telegram token and chat ID, or disable Telegram reminders.".into(),
+                );
+            }
+            self.draft.telegram_token_protected = platform::protect(self.token.trim())?;
+            let mut store = self.store.lock().unwrap();
+            let previous = store.settings.clone();
+            let mut next = self.draft.clone();
+            next.deliveries = store.settings.deliveries.clone();
+            next.data_dir = store.settings.data_dir.clone();
+            store.settings = next;
+            if let Err(e) = store.save_settings() {
+                store.settings = previous;
+                return Err(e);
+            }
+            Ok(())
+        })();
+        self.notice = result.err().unwrap_or_else(|| "Settings saved.".into());
     }
 
     fn editor(&mut self, ctx: &egui::Context) {
@@ -418,6 +476,30 @@ fn section(ui: &mut egui::Ui, title: &str, content: impl FnOnce(&mut egui::Ui)) 
 
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        self.importer.poll();
+        if let Some(capture) = &mut self.capture {
+            if let Err(error) = capture.tick(ctx, self.importer.busy(), self.importer.report()) {
+                self.notice = error;
+                self.platform.request_quit();
+            }
+            self.page = capture.page();
+            if capture.done {
+                self.platform.request_quit();
+            }
+        }
+        let dropped = ctx.input(|i| i.raw.dropped_files.iter().find_map(|f| f.path.clone()));
+        if let Some(path) = dropped {
+            self.page = 1;
+            if self.importer.load_file(&path, ctx) {
+                self.importer.recognize(&self.store, ctx);
+            }
+        }
+        if self.page == 1
+            && !ctx.wants_keyboard_input()
+            && ctx.input_mut(|i| i.consume_key(egui::Modifiers::CTRL, egui::Key::V))
+        {
+            self.importer.paste(&self.store, ctx);
+        }
         if ctx.input(|i| i.viewport().close_requested())
             && !self.platform.quit.load(Ordering::SeqCst)
         {
@@ -437,11 +519,11 @@ impl eframe::App for App {
             .show(ctx, |ui| {
                 let available =
                     matches!(*self.updates.lock().unwrap(), updates::State::Available(_));
-                if available && self.page != 1 {
+                if available && self.page != 2 {
                     ui.horizontal(|ui| {
                         ui.colored_label(ACCENT, "A new version is available.");
                         if ui.button("View update").clicked() {
-                            self.page = 1;
+                            self.page = 2;
                         }
                     });
                     ui.add_space(8.);
@@ -455,10 +537,14 @@ impl eframe::App for App {
                     });
                     ui.add_space(8.);
                 }
-                if self.page == 0 {
-                    self.list(ui);
-                } else {
-                    self.settings(ui, ctx);
+                match self.page {
+                    0 => self.list(ui),
+                    1 => {
+                        if self.importer.show(ui, ctx, &self.store) {
+                            self.page = 2;
+                        }
+                    }
+                    _ => self.settings(ui, ctx),
                 }
             });
         self.editor(ctx);
