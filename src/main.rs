@@ -2,6 +2,7 @@
 
 mod ai;
 mod capture;
+mod drive;
 mod import_ui;
 mod model;
 mod platform;
