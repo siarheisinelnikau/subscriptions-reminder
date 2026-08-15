@@ -2,3 +2,4 @@
 /dist/
 /.qa/
 *.pdb
+client_secret_*.json

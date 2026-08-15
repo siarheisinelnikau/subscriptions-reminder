@@ -1,6 +1,6 @@
 [package]
 name = "subscriptions-reminder"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 rust-version = "1.88"
 description = "A portable Windows subscription tracker with background reminders"
@@ -13,6 +13,7 @@ base64 = "0.23.1"
 chrono = { version = "0.4.45", features = ["serde"] }
 eframe = { version = "=0.33.3", default-features = false, features = ["glow", "default_fonts", "accesskit"] }
 fs2 = "0.4.3"
+getrandom = "0.4.3"
 image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "webp"] }
 raw-window-handle = "0.6.2"
 rfd = "0.15.4"
@@ -24,6 +25,7 @@ tempfile = "3.27.0"
 ureq = { version = "3.5.0", features = ["json"] }
 url = "2.5.8"
 uuid = { version = "1.26", features = ["v4", "serde"] }
+webbrowser = "1.2.5"
 windows-sys = { version = "0.61.2", features = ["Win32_Foundation", "Win32_Graphics_Gdi", "Win32_Security", "Win32_Security_Cryptography", "Win32_System_LibraryLoader", "Win32_System_Memory", "Win32_System_Registry", "Win32_System_Threading", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging"] }
 
 [build-dependencies]

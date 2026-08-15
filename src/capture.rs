@@ -22,6 +22,7 @@ impl Capture {
         match self.step {
             0 => 0,
             1 | 2 => 2,
+            3 => 3,
             _ => 1,
         }
     }
@@ -48,7 +49,7 @@ impl Capture {
         });
         if let Some(image) = image {
             std::fs::create_dir_all(&self.dir).map_err(|e| e.to_string())?;
-            if self.step == 3
+            if self.step == 4
                 && let Some(result) = recognition
             {
                 std::fs::write(
@@ -61,6 +62,7 @@ impl Capture {
                 "subscriptions.png",
                 "settings.png",
                 "storage-updates.png",
+                "google-drive.png",
                 "image-import.png",
             ][self.step];
             let bytes = image
@@ -79,7 +81,7 @@ impl Capture {
             self.step += 1;
             self.wait = 5;
             self.requested = false;
-            if self.step == 4 {
+            if self.step == 5 {
                 self.done = true;
                 return Ok(());
             }
@@ -87,7 +89,7 @@ impl Capture {
         if self.wait > 0 {
             self.wait -= 1;
             ctx.request_repaint();
-        } else if !(self.requested || self.step == 3 && busy) {
+        } else if !(self.requested || self.step == 4 && busy) {
             self.requested = true;
             ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot(egui::UserData::default()));
             ctx.request_repaint();
