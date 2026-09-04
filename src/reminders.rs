@@ -58,12 +58,17 @@ pub fn start(store: Arc<Mutex<Store>>, platform: Arc<Platform>) {
 
 fn tick(shared: &Arc<Mutex<Store>>, platform: &Platform) {
     let today = Local::now().date_naive();
-    let (settings, due) = {
+    let (settings, due, changed) = {
         let mut store = shared.lock().unwrap();
-        if let Err(error) = store.refresh() {
-            store.error = Some(error);
-            return;
-        }
+        let changed = match store.refresh() {
+            Ok(changed) => changed,
+            Err(error) => {
+                store.error = Some(error);
+                drop(store);
+                platform.request_repaint();
+                return;
+            }
+        };
         (
             store.settings.clone(),
             store
@@ -73,8 +78,12 @@ fn tick(shared: &Arc<Mutex<Store>>, platform: &Platform) {
                 .filter(|s| s.needs_reminder(today))
                 .cloned()
                 .collect::<Vec<_>>(),
+            changed,
         )
     };
+    if changed {
+        platform.request_repaint();
+    }
     // Aggregate Windows reminders into one notification; Shell may replace rapid balloons.
     let windows: Vec<_> = due
         .iter()
@@ -121,6 +130,10 @@ fn tick(shared: &Arc<Mutex<Store>>, platform: &Platform) {
                 }
             }
         }
+    }
+    let failed = shared.lock().unwrap().error.is_some();
+    if failed {
+        platform.request_repaint();
     }
 }
 

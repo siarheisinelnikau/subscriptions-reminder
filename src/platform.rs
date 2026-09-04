@@ -1,4 +1,3 @@
-use eframe::egui;
 use std::{
     collections::VecDeque,
     ffi::c_void,
@@ -122,6 +121,11 @@ impl Platform {
     pub fn bind(&self, hwnd: isize, ctx: egui::Context) {
         self.main.store(hwnd, Ordering::SeqCst);
         *self.context.lock().unwrap() = Some(ctx);
+    }
+    pub fn request_repaint(&self) {
+        if let Some(ctx) = self.context.lock().unwrap().as_ref() {
+            ctx.request_repaint();
+        }
     }
     pub fn stop(&self) {
         self.main.store(0, Ordering::SeqCst);
@@ -256,12 +260,18 @@ unsafe extern "system" fn window_proc(hwnd: HWND, msg: u32, w: WPARAM, l: LPARAM
                     );
                     DestroyMenu(menu);
                     PostMessageW(hwnd, WM_NULL, 0, 0);
-                    if cmd == 1 {
-                        platform.restore();
-                    } else if cmd == 2 {
-                        platform.request_quit();
+                    if cmd != 0 {
+                        PostMessageW(hwnd, WM_COMMAND, cmd as WPARAM, 0);
                     }
                 },
+                _ => (),
+            }
+            0
+        }
+        WM_COMMAND => {
+            match (w & 0xffff) as u32 {
+                1 => platform.restore(),
+                2 => platform.request_quit(),
                 _ => (),
             }
             0

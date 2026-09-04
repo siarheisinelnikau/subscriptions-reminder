@@ -3,3 +3,4 @@
 /.qa/
 *.pdb
 client_secret_*.json
+/src/drive/google-oauth.json

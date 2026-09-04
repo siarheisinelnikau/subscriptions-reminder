@@ -1,4 +1,4 @@
-# v0.3.0 verification
+# v0.4.2 verification
 
 Verified on Windows with Rust 1.96.1:
 
@@ -14,17 +14,24 @@ Verified on Windows with Rust 1.96.1:
 - Google Drive app-data request scoping, pagination, download validation, deterministic upload IDs, multipart create/media update requests, and expired-access-token handling using local HTTP fixtures.
 - Two-device replication simulations for independent offline edits, concurrent conflicts and resolution, deletions, lost upload responses, and edits made while a download is in flight.
 - Formatting and Clippy checks.
+- All 37 tests with no bundled configuration and with the Desktop JSON supplied through the build environment; a required release build without configuration is rejected without logging configuration values.
 - An interactive launch of the packaged application with isolated sample data, dashboard rendering, opening Settings, and exiting through Quit.
 - In v0.2.0, a live request from the packaged image importer to an authenticated AI-Hub Universal endpoint correctly recognized three demonstration subscriptions with their dates, prices, and currencies. The response also identified the overdue subscription.
 - Real application frame captures of the dashboard, Settings, lower settings, Google Drive setup, and image import view, without operating-system cursor overlays.
+- A comparative isolated visible-idle sample after 18 seconds of settling: v0.4.0 used 68.88% of one CPU core over four seconds; v0.4.1 used 0.00%. The originally reported user process also showed 97–99% of one core on its main thread, with negligible GPU use. A three-second hidden-window sample of v0.4.1 measured 0.00% of a core.
+- Interactive v0.4.1 checks for Settings navigation, hide-on-close with Alt+F4, same-PID restoration by duplicate launch from hidden and minimized states, duplicate-launch opening after background startup, and visible Quit. Restored windows were actually inspected; foreground focus during concurrent user activity was not established.
+- v0.4.2 replaces the GPU host with CPU rasterization and Windows GDI presentation. The packaged process loaded `gdi32.dll` and `gdi32full.dll`, with no matching OpenGL, NVIDIA OpenGL, DXGI, Direct3D, Vulkan, EGL, or GLES modules. The Windows dependency tree contains no eframe, glow, or wgpu renderer.
+- All three opt-in desktop regressions passed against `dist/SubscriptionsReminder-v0.4.2.exe`: real HWND hide/restore cycles through tray single/double-click callbacks, Open/Quit command dispatch, minimized restoration, background startup, duplicate launch, and hidden shutdown. A background-started process also produced all five actual CPU-rendered screenshots after restoration, preserving initial font uploads. Dashboard, Settings, and Google Drive captures were visually inspected for text, colors, and clipping.
+- With three demo subscriptions, a four-second visible-idle sample after 18 seconds of settling measured 0.00% of one CPU core. A four-second hidden sample measured 0.00%. The restored sample measured 14.06% while input was arriving, so it is excluded from the idle comparison. A separate 120-event pointer-movement workload measured 12.84% of one core.
+- The opt-in trace recorded a 27.924-second gap between visible UI passes across approximately 22 seconds of visible waiting and six seconds hidden. Across the complete mixed idle/restore/pointer test, 242 visible UI passes resulted in 70 rasterized frames; 172 unchanged scenes skipped rasterization and presentation. The removed 15-second heartbeat did not produce an idle frame. Timed waits still support input, animations, screenshots, and local-midnight date refresh; background changes explicitly wake the UI.
+- The account owner tested the normal v0.4.2 process with their settings and confirmed that the cursor and Windows were smooth, including the hide/reopen scenario. This confirms the reported perceptual improvement on this machine; the short measurements are not a guarantee of zero CPU use or universal hardware performance.
 
-All 35 automated tests pass. OpenRouter uses the documented image-input protocol and the client was exercised against local HTTP fixtures; a paid OpenRouter call was not made. Google requests were tested against HTTP fixtures and a multi-device simulator, **not a real Google account**. The following remain unverified and should be checked manually:
+All 37 unit tests and three opt-in desktop integration tests pass, with formatting and Clippy checks. Unit coverage includes validation of the bundled Desktop client, persistence of a session's original client across updates, and detection of external data changes without waking the UI for unchanged data. OAuth configuration is excluded from Git and provided through an ignored local file or a build environment variable. The maintainer's Google Cloud project now has Drive API enabled, the app-data scope configured, and the account owner registered as a test user. Browser sign-in and a real cloud round-trip are still pending account-owner verification. OpenRouter uses the documented image-input protocol and the client was exercised against local HTTP fixtures; a paid OpenRouter call was not made. Google requests were tested against HTTP fixtures and a multi-device simulator, **not a real Google account**. The following remain unverified and should be checked manually:
 
-- Closing to the tray and reopening by single click, double click, and the tray Open menu.
-- Restoring a minimized window; reopening a background-started instance; duplicate-launch activation; repeated hide/reopen cycles; and Quit while hidden.
+- A complete physical tray mouse/menu test for every action, including hidden Quit. Native callback/command regression coverage and user-confirmed smoothness are recorded separately above.
 - Visible Windows notification delivery and continuing reminders while hidden.
 - Real Telegram delivery with user-supplied bot credentials.
-- Actual Google browser sign-in, consent, session refresh, and Drive synchronization across computers. A Google Cloud project/Desktop OAuth client still needs to be created and imported by the account owner.
+- Actual Google browser sign-in, consent, session refresh, and Drive synchronization across computers. The bundled project remains in Testing, so only registered test users can sign in and Google may require reconnection after seven days.
 - Downloading, replacing the installed executable, and restarting through the updater. Version/asset/checksum logic is covered by tests; the full installation flow is not yet verified against a newer published release.
 
 No Telegram credentials or real subscription data were used during verification. The private AI-Hub credential was used with explicit user authorization, kept outside the repository, and stored with Windows DPAPI encryption. README images contain demonstration data only.
