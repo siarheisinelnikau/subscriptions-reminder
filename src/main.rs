@@ -3,6 +3,7 @@
 mod ai;
 mod capture;
 mod drive;
+mod event_loop;
 mod import_ui;
 mod model;
 mod platform;
@@ -12,7 +13,6 @@ mod ui;
 mod updates;
 
 use fs2::FileExt;
-use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use sha2::{Digest, Sha256};
 use std::{
     fs,
@@ -114,40 +114,13 @@ fn run(args: &[String]) -> Result<(), String> {
     let store = Arc::new(Mutex::new(store));
     let platform = platform::Platform::start(identity)?;
     reminders::start(store.clone(), platform.clone());
-    let options = eframe::NativeOptions {
-        viewport: eframe::egui::ViewportBuilder::default()
-            .with_inner_size([
-                1120.,
-                if launch.capture_dir.is_some() {
-                    1000.
-                } else {
-                    900.
-                },
-            ])
-            .with_min_inner_size([860., 620.])
-            .with_visible(!args.iter().any(|s| s == "--background"))
-            .with_icon(eframe::egui::IconData {
-                rgba: platform::icon_pixels(),
-                width: 32,
-                height: 32,
-            }),
-        renderer: eframe::Renderer::Glow,
-        centered: true,
-        ..Default::default()
-    };
     let stopped = platform.clone();
-    let result = eframe::run_native(
-        "Subscriptions Reminder",
-        options,
-        Box::new(move |cc| {
-            let hwnd = match cc.window_handle()?.as_raw() {
-                RawWindowHandle::Win32(handle) => handle.hwnd.get(),
-                _ => return Err("Only Windows is currently supported".into()),
-            };
-            Ok(Box::new(ui::App::new(cc, store, platform, hwnd, launch)))
-        }),
-    )
-    .map_err(|e| format!("Cannot start the application: {e}"));
+    let result = event_loop::run(
+        store,
+        platform,
+        launch,
+        args.iter().any(|s| s == "--background"),
+    );
     stopped.stop();
     drop(instance);
     result

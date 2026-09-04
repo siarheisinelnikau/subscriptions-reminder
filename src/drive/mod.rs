@@ -56,16 +56,25 @@ impl Settings {
     pub fn connected(&self) -> bool {
         !self.refresh_token_protected.is_empty() && !self.account_id.is_empty()
     }
+    pub fn can_connect(&self) -> bool {
+        !self.client_id.is_empty() || matches!(oauth::Client::bundled(), Ok(Some(_)))
+    }
     fn client(&self) -> Result<oauth::Client, Failure> {
         if self.client_id.is_empty() {
-            return Err(Failure::data(
-                "Import a Google Desktop OAuth client JSON before connecting.",
-            ));
+            return oauth::Client::bundled().map_err(Failure::data)?.ok_or_else(|| {
+                Failure::data("Google sign-in is not configured in this build. Use a release with Google sign-in, or configure your own client under Advanced.")
+            });
         }
         Ok(oauth::Client {
             id: self.client_id.clone(),
             secret: platform::unprotect(&self.client_secret_protected).map_err(Failure::data)?,
         })
+    }
+    fn remember_client(&mut self, client: &oauth::Client) -> Result<(), Failure> {
+        let secret = platform::protect(&client.secret).map_err(Failure::data)?;
+        self.client_id = client.id.clone();
+        self.client_secret_protected = secret;
+        Ok(())
     }
 }
 
@@ -301,11 +310,7 @@ pub struct Controller {
     cancel: Arc<AtomicBool>,
 }
 impl Controller {
-    pub fn new(
-        shared: Arc<Mutex<Store>>,
-        platform: Arc<Platform>,
-        ctx: eframe::egui::Context,
-    ) -> Self {
+    pub fn new(shared: Arc<Mutex<Store>>, platform: Arc<Platform>, ctx: egui::Context) -> Self {
         let (sender, receiver) = mpsc::channel();
         let status = Arc::new(Mutex::new(Status::default()));
         let cancel = Arc::new(AtomicBool::new(false));
@@ -335,6 +340,9 @@ impl Controller {
         self.sender
             .send(Command::Import(client))
             .map_err(|_| "The sync worker stopped. Restart the application.".into())
+    }
+    pub fn use_bundled_client(&self) -> Result<(), String> {
+        self.import(oauth::Client::BUNDLED_JSON)
     }
     pub fn connect(&self) {
         let _ = self.sender.send(Command::Connect);
@@ -391,7 +399,7 @@ fn access(shared: &Arc<Mutex<Store>>, cache: &mut Option<Access>) -> Result<Stri
 
 fn update_status(
     status: &Arc<Mutex<Status>>,
-    ctx: &eframe::egui::Context,
+    ctx: &egui::Context,
     phase: Phase,
     message: impl Into<String>,
 ) {
@@ -421,7 +429,7 @@ fn save_settings(shared: &Arc<Mutex<Store>>, next: Settings) -> Result<(), Failu
 fn connect(
     shared: &Arc<Mutex<Store>>,
     platform: &Platform,
-    ctx: &eframe::egui::Context,
+    ctx: &egui::Context,
     status: &Arc<Mutex<Status>>,
     cancel: &AtomicBool,
 ) -> Result<Access, Failure> {
@@ -450,6 +458,9 @@ fn connect(
     if cancel.load(Ordering::SeqCst) {
         return Err(Failure::data("Google sign-in was cancelled."));
     }
+    // Pin the client to the saved session so a later release's bundled client
+    // cannot silently change its token audience or Drive replication identity.
+    settings.remember_client(&client)?;
     settings.refresh_token_protected = platform::protect(&refresh).map_err(Failure::data)?;
     settings.account_id = account.id;
     settings.account_label = if account.email.is_empty() {
@@ -468,7 +479,7 @@ fn connect(
 fn worker(
     shared: Arc<Mutex<Store>>,
     platform: Arc<Platform>,
-    ctx: eframe::egui::Context,
+    ctx: egui::Context,
     receiver: mpsc::Receiver<Command>,
     status: Arc<Mutex<Status>>,
     cancel: Arc<AtomicBool>,
@@ -495,9 +506,7 @@ fn worker(
                                 "Disconnect this computer before changing its Google OAuth client.",
                             ));
                         }
-                        settings.client_id = client.id;
-                        settings.client_secret_protected =
-                            platform::protect(&client.secret).map_err(Failure::data)?;
+                        settings.remember_client(&client)?;
                         settings.needs_sign_in = false;
                         save_settings(&shared, settings)?;
                         update_status(
@@ -574,12 +583,12 @@ fn worker(
             }
             let settings = shared.lock().unwrap().settings.drive.clone();
             if !settings.connected() {
-                if settings.client_id.is_empty() {
+                if !settings.can_connect() {
                     update_status(
                         &status,
                         &ctx,
                         Phase::Setup,
-                        "Import a Desktop OAuth client JSON once, then sign in with Google.",
+                        "Google sign-in is not configured in this build.",
                     );
                 }
                 return Ok(());
@@ -755,6 +764,24 @@ mod tests {
         store.save_settings().unwrap();
         let cp = Checkpoint::open(&store).unwrap();
         (Arc::new(Mutex::new(store)), cp)
+    }
+    #[test]
+    fn saved_session_keeps_its_client_instead_of_a_new_bundled_default() {
+        let mut settings = Settings::default();
+        if let Some(bundled) = oauth::Client::bundled().unwrap() {
+            assert!(settings.can_connect());
+            assert_eq!(settings.client().unwrap().id, bundled.id);
+        }
+        let original = oauth::Client {
+            id: "previous-release.apps.googleusercontent.com".into(),
+            secret: "original-desktop-client".into(),
+        };
+        settings.remember_client(&original).unwrap();
+        let restored: Settings =
+            serde_json::from_slice(&serde_json::to_vec(&settings).unwrap()).unwrap();
+        let client = restored.client().unwrap();
+        assert_eq!(client.id, original.id);
+        assert_eq!(client.secret, original.secret);
     }
     fn add(store: &Arc<Mutex<Store>>, name: &str) {
         let mut store = store.lock().unwrap();

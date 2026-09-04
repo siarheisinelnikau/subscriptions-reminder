@@ -1,5 +1,5 @@
 use crate::{ai, model::Cycle, platform, storage::Store};
-use eframe::egui::{self, Color32, RichText};
+use egui::{self, Color32, RichText};
 use std::{
     path::Path,
     sync::{Arc, Mutex},

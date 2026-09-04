@@ -20,10 +20,11 @@ A small Rust desktop app that keeps subscription expiry dates out of your head. 
 - Optionally send reminders through your own Telegram bot.
 - Sign in to Google Drive in your browser and synchronize directly, with an offline local copy and conflict review.
 - Check for updates and download, verify, install, and restart from Settings.
+- Render on the CPU and present through Windows GDI, with event-driven redraws and no OpenGL or DirectX context.
 
 ## Getting started
 
-1. Download `SubscriptionsReminder-v0.3.0.exe` from [Releases](https://github.com/siarheisinelnikau/subscriptions-reminder/releases).
+1. Download `SubscriptionsReminder-v0.4.2.exe` from [Releases](https://github.com/siarheisinelnikau/subscriptions-reminder/releases).
 2. Put it in a writable folder where you plan to keep it, then launch it.
 3. Click **Add subscription**. Enter its name, expiry date (`YYYY-MM-DD`), and reminder lead time.
 4. In **Settings**, optionally enable **Start with Windows**. Closing the window keeps the app running; use the tray icon or launch the EXE again to reopen it. **Quit** stops reminders.
@@ -67,12 +68,14 @@ Dates that are not visible remain unresolved and must be entered before saving. 
 
 ![Direct Google Drive connection and setup screen](docs/screenshots/google-drive.png)
 
-Google Drive is connected directly through the Drive API. You do not need Drive for desktop, a mounted Drive folder, or another sync application. The first connection requires a **Google Cloud Desktop OAuth client**. This release does not bundle a shared OAuth client; see the [one-time setup guide](docs/google-drive-setup.md).
+Google Drive is connected directly through the Drive API. The application includes its Desktop OAuth client, so ordinary connection does not require a Google Cloud project or a downloaded configuration file. You do not need Drive for desktop, a mounted Drive folder, or another sync application.
 
-1. Open **Google Drive** in the sidebar and click **Import Google OAuth JSON...**. Select the Desktop app client JSON downloaded from your Google Cloud project.
+1. Open **Google Drive** in the sidebar.
 2. Click **Connect Google Drive**. Finish sign-in and grant the requested app-data permission in your system browser.
 3. Return to the app. Your current local subscriptions merge with the selected Google account. **Synchronize automatically** is enabled by default.
-4. On another computer, import the same OAuth client JSON and sign in to the same Google account.
+4. On another computer, use the same application release and sign in to the same Google account.
+
+The bundled Google project is currently in **Testing**, so sign-in is limited to its registered test users. Google may require reconnection after seven days. Registration and any production verification belong to the application maintainer, not each end user. Developers can still import their own Desktop client under **Advanced: custom Google connection**; see the [maintainer and custom-client guide](docs/google-drive-setup.md).
 
 Local changes are uploaded after a short debounce; other devices are checked every 60 seconds. **Sync now** starts an immediate round. Disabling automatic synchronization prevents future background sync and token-refresh requests; manual syncing remains available. An in-flight request may finish when paused or disconnected. Synchronization runs independently of window rendering.
 
@@ -113,15 +116,24 @@ cargo build --release --locked
 ./scripts/package.ps1
 ```
 
-The packaged EXE and `SHA256SUMS.txt` appear in `dist/`. The MSVC C runtime is statically linked. The GUI uses egui/eframe and OpenGL through the Windows graphics driver.
+The packaged EXE and `SHA256SUMS.txt` appear in `dist/`. The MSVC C runtime is statically linked. The GUI uses egui with CPU rasterization and Windows GDI bitmap presentation. Idle windows wait for events; unchanged scenes skip rasterization and presentation. Hidden and minimized windows process commands without painting. Input-driven frames are coalesced at up to 60 FPS; this is a ceiling, not a continuous render loop. Reminder and synchronization workers run independently.
 
 For isolated UI testing, use a separate local settings directory:
 
 ```powershell
-./dist/SubscriptionsReminder-v0.3.0.exe --data-dir ./target/manual-test --demo
+./dist/SubscriptionsReminder-v0.4.2.exe --data-dir ./target/manual-test --demo
 ```
 
 `--demo` only inserts sample subscriptions into an empty data store and disables automatic update checks and reminder notifications for that demo store. `--background` starts with the main window hidden. Instances share one window and monitor per settings directory.
+
+The opt-in native desktop regressions exercise the packaged EXE, actual window handles, and tray callback dispatch on an interactive Windows desktop:
+
+```powershell
+$env:SUBSCRIPTIONS_GUI_EXE = (Resolve-Path ./dist/SubscriptionsReminder-v0.4.2.exe).Path
+cargo test --locked --test desktop -- --ignored --nocapture --test-threads=1
+```
+
+Set `SUBSCRIPTIONS_RENDER_TRACE` to a local JSONL file to collect frame timings and counts. Batches are written outside the UI thread and contain performance measurements only. Tracing is disabled by default.
 
 `--image PATH` opens an image in the import view. Add `--recognize` to start recognition using the saved AI connection. For cursor-free documentation screenshots, `--capture-dir PATH` captures the actual dashboard, settings, lower settings, Google Drive connection screen, and import view, then exits. When recognition is active, the import capture waits for its result and saves a local `recognition.json` report alongside the PNGs.
 
