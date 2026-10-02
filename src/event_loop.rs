@@ -37,6 +37,7 @@ struct SoftwareWindow {
     input: egui_winit::State,
     info: egui::ViewportInfo,
     renderer: EguiSoftwareRender,
+    theme: crate::theme::Preference,
     pending_textures: egui::TexturesDelta,
     pending_screenshots: Vec<egui::UserData>,
     scene: Vec<egui::epaint::ClippedShape>,
@@ -60,19 +61,13 @@ struct SoftwareApp {
 
 impl SoftwareApp {
     fn initialize(&mut self, event_loop: &ActiveEventLoop) -> Result<()> {
-        let capture = self
-            .launch
-            .as_ref()
-            .is_some_and(|launch| launch.capture_dir.is_some());
+        let theme = self.store.lock().unwrap().settings.theme;
         let window = Arc::new(
             event_loop.create_window(
                 Window::default_attributes()
                     .with_title("Subscriptions Reminder")
-                    .with_inner_size(LogicalSize::new(
-                        1120.0,
-                        if capture { 1000.0 } else { 900.0 },
-                    ))
-                    .with_min_inner_size(LogicalSize::new(860.0, 620.0))
+                    .with_inner_size(LogicalSize::new(1000.0, 760.0))
+                    .with_min_inner_size(LogicalSize::new(820.0, 580.0))
                     .with_visible(!self.hidden)
                     .with_window_icon(Some(Icon::from_rgba(
                         crate::platform::icon_pixels(),
@@ -81,6 +76,12 @@ impl SoftwareApp {
                     )?)),
             )?,
         );
+        // Keep winit subscribed to OS theme changes even after switching away
+        // from a forced app theme. set_theme changes only the native appearance
+        // in winit 0.30.13, not its initial preferred_theme subscription.
+        if theme != crate::theme::Preference::System {
+            window.set_theme(theme.window_theme());
+        }
         let context = softbuffer::Context::new(event_loop.owned_display_handle())
             .map_err(|e| anyhow::anyhow!("Could not create the GDI drawing context: {e}"))?;
         let surface = softbuffer::Surface::new(&context, window.clone())
@@ -114,6 +115,7 @@ impl SoftwareApp {
             input,
             info: Default::default(),
             renderer: EguiSoftwareRender::new(ColorFieldOrder::Bgra),
+            theme,
             pending_textures: Default::default(),
             pending_screenshots: Vec::new(),
             scene: Vec::new(),
@@ -152,6 +154,11 @@ impl SoftwareApp {
         state.info.events.clear();
         let ui_started = Instant::now();
         let mut output = self.context.run(input, |ctx| state.native.draw(ctx));
+        let theme = state.native.theme_preference();
+        if theme != state.theme {
+            state.theme = theme;
+            state.window.set_theme(theme.window_theme());
+        }
         let ui_elapsed = ui_started.elapsed();
         // Keep font/image uploads from hidden frames until the next presentation.
         state.pending_textures.append(output.textures_delta);
@@ -310,6 +317,11 @@ impl ApplicationHandler<Repaint> for SoftwareApp {
         };
         if state.window.id() != id {
             return;
+        }
+        if matches!(event, WindowEvent::ThemeChanged(_))
+            && state.theme != crate::theme::Preference::System
+        {
+            state.window.set_theme(state.theme.window_theme());
         }
         if matches!(
             event,

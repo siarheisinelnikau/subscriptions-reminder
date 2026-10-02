@@ -9,6 +9,7 @@ mod model;
 mod platform;
 mod reminders;
 mod storage;
+mod theme;
 mod ui;
 mod updates;
 
@@ -98,6 +99,20 @@ fn run(args: &[String]) -> Result<(), String> {
                 -1,
                 "15.00",
                 "Review the plan before renewing",
+            ),
+            ("Password manager", 3, "2.99", "Family account"),
+            ("Video library", 5, "8.99", "Standard plan"),
+            ("VPN service", 12, "5.00", ""),
+            ("Domain renewal", 17, "12.00", "Personal website"),
+            ("Language course", 21, "7.50", "Monthly lessons"),
+            ("Reading app", 28, "9.99", ""),
+            ("Developer tools", 30, "12.00", "Personal workspace"),
+            ("Fitness plan", 35, "14.99", ""),
+            (
+                "Family photo archive and cloud storage",
+                45,
+                "3.99",
+                "Shared library and automatic photo backups",
             ),
         ] {
             let mut sub = model::Subscription::new(today + chrono::Duration::days(days));

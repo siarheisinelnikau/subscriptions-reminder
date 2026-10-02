@@ -275,9 +275,12 @@ fn font_uploads_and_screenshots_survive_background_startup() {
     for name in [
         "subscriptions.png",
         "settings.png",
+        "ai-settings.png",
+        "notifications.png",
         "storage-updates.png",
         "google-drive.png",
         "image-import.png",
+        "editor.png",
     ] {
         let path = capture.join(name);
         assert!(path.metadata().unwrap().len() > 1000, "No rendered {name}");

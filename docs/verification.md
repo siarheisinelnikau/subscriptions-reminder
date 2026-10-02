@@ -1,6 +1,11 @@
-# v0.4.2 verification
+# v0.5.0 verification
 
 Verified on Windows with Rust 1.96.1:
+
+- A full compact redesign with Windows Segoe UI typography based on Multi-Monitor Brightness: 13 px body text, 12 px buttons, a full-width workspace without a sidebar, inline summary, and aligned subscription columns. At 1000 × 760, ten complete records are visible in Compact mode with twelve demo records loaded.
+- Separate General, AI provider, Notifications, Google Drive, and Storage & updates tabs; Light, Dark, and System appearance; and saved Compact, Standard, and Large subscription sizes. Real frame captures cover the table, all five Settings tabs, image import, and the editor. The three row sizes were captured from saved settings in isolated demo stores; theme/density switching through a physical mouse is not part of this verification.
+- The image-import screen was exercised with an actual inline-image request to a deterministic local HTTP fixture returning three demonstration records. The current README import image comes from that real UI capture. No external AI request was made for the redesign captures, and the fixture is not evidence of live vision recognition.
+- All three desktop regressions passed against the final v0.5.0 packaged EXE with twelve demo records and eight frame captures. The final visible sample measured 8.20% of one CPU core while window input events were arriving, so it is not an idle measurement. Hidden and restored samples measured 0.00%; the injected pointer-event workload measured 5.60%. Frame tracing confirmed unchanged-scene skips. Perceptual smoothness was confirmed by the user for v0.4.2; the v0.5.0 redesign has not yet had a separate user assessment.
 
 - Release compilation with a statically linked MSVC runtime; the packaged executable imports only Windows system DLLs.
 - Unit tests for reminder lead times, overdue catch-up, paused subscriptions, month-end and leap-year renewal, and daily per-channel deduplication.

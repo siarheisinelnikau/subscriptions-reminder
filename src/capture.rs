@@ -19,14 +19,21 @@ impl Capture {
     }
     pub fn page(&self) -> usize {
         match self.step {
-            0 => 0,
-            1 | 2 => 2,
-            3 => 3,
+            0 | 7 => 0,
+            1..=5 => 2,
             _ => 1,
         }
     }
-    pub fn bottom(&self) -> bool {
-        self.step == 2
+    pub fn settings_tab(&self) -> Option<usize> {
+        match self.step {
+            1..=3 => Some(self.step - 1),
+            4 => Some(4),
+            5 => Some(3),
+            _ => None,
+        }
+    }
+    pub fn editor(&self) -> bool {
+        self.step == 7
     }
     pub fn tick(
         &mut self,
@@ -48,7 +55,7 @@ impl Capture {
         });
         if let Some(image) = image {
             std::fs::create_dir_all(&self.dir).map_err(|e| e.to_string())?;
-            if self.step == 4
+            if self.step == 6
                 && let Some(result) = recognition
             {
                 std::fs::write(
@@ -60,9 +67,12 @@ impl Capture {
             let name = [
                 "subscriptions.png",
                 "settings.png",
+                "ai-settings.png",
+                "notifications.png",
                 "storage-updates.png",
                 "google-drive.png",
                 "image-import.png",
+                "editor.png",
             ][self.step];
             let bytes = image
                 .pixels
@@ -80,7 +90,7 @@ impl Capture {
             self.step += 1;
             self.wait = 5;
             self.requested = false;
-            if self.step == 5 {
+            if self.step == 8 {
                 self.done = true;
                 return Ok(());
             }
@@ -88,7 +98,7 @@ impl Capture {
         if self.wait > 0 {
             self.wait -= 1;
             ctx.request_repaint();
-        } else if !(self.requested || self.step == 4 && busy) {
+        } else if !(self.requested || self.step == 6 && busy) {
             self.requested = true;
             ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot(egui::UserData::default()));
             ctx.request_repaint();
