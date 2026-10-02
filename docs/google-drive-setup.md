@@ -22,7 +22,7 @@ Existing sessions retain the client they originally authorized, including after 
 4. Under **Data Access**, add `https://www.googleapis.com/auth/drive.appdata`. This app does not need the broad `drive` scope.
 5. Under **Clients** or **APIs & Services → Credentials**, create an **OAuth client ID** and select **Desktop app** as the application type. Do not create a Web application or service account client.
 6. Download its JSON configuration. Google commonly names it `client_secret_...apps.googleusercontent.com.json`.
-7. In Subscriptions Reminder, expand **Google Drive → Advanced: custom Google connection**, click **Import Google OAuth JSON...**, and select that file.
+7. In Subscriptions Reminder, open **Settings → Google Drive → Advanced: custom Google connection**, click **Import Google OAuth JSON...**, and select that file.
 8. Click **Connect Google Drive**. Complete account selection and permission approval in your browser, then return to the application. Only you should enter Google credentials or approve the consent screen.
 
 Google Cloud screen names can vary. The important requirements are an enabled Drive API, a correctly configured consent screen, the app-data scope, and a Desktop app client. See [Google's desktop OAuth guide](https://developers.google.com/identity/protocols/oauth2/native-app) and [Drive app-data guide](https://developers.google.com/workspace/drive/api/guides/appdata).

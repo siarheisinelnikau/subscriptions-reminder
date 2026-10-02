@@ -9,6 +9,8 @@ use std::{
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Settings {
+    pub theme: crate::theme::Preference,
+    pub subscription_size: crate::theme::SubscriptionSize,
     pub drive: crate::drive::Settings,
     pub ai: crate::ai::Settings,
     pub data_dir: PathBuf,
@@ -23,6 +25,8 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
+            theme: crate::theme::Preference::default(),
+            subscription_size: crate::theme::SubscriptionSize::default(),
             drive: crate::drive::Settings::default(),
             ai: crate::ai::Settings::default(),
             data_dir: PathBuf::new(),

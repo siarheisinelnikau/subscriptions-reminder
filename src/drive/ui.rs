@@ -1,6 +1,7 @@
 use super::{Controller, Phase, oauth, replica::Resolution};
 use crate::storage::Store;
-use egui::{self, Color32, RichText};
+use crate::theme::Palette;
+use egui::{self, RichText};
 use std::sync::{Arc, Mutex};
 
 #[derive(Default)]
@@ -9,9 +10,12 @@ pub struct Panel {
 }
 impl Panel {
     pub fn show(&mut self, ui: &mut egui::Ui, drive: &Controller, shared: &Arc<Mutex<Store>>) {
-        ui.heading("Google Drive");
-        ui.label("Sign in once. Subscriptions and notes synchronize directly, with a local offline copy.");
-        ui.add_space(16.);
+        ui.label(
+            RichText::new("Automatic synchronization with a local offline copy.")
+                .small()
+                .color(Palette::for_ui(ui).muted),
+        );
+        ui.add_space(10.);
         let settings = shared.lock().unwrap().settings.drive.clone();
         let status = drive.status();
         let signing_in = status.phase == Phase::Authorizing;
@@ -20,7 +24,7 @@ impl Panel {
         egui::ScrollArea::vertical().id_salt("drive-panel").show(ui, |ui| {
             frame(ui, "Connection", |ui| {
                 if settings.connected() { ui.label(RichText::new(&settings.account_label).strong()); }
-                ui.colored_label(if matches!(status.phase, Phase::Offline | Phase::SignInRequired) { Color32::LIGHT_YELLOW } else { Color32::LIGHT_BLUE }, &status.message);
+                ui.colored_label(if matches!(status.phase, Phase::Offline | Phase::SignInRequired) { Palette::for_ui(ui).warning } else { Palette::for_ui(ui).accent }, &status.message);
                 if let Some(last) = status.last_success { ui.label(format!("Last synchronized: {}", last.with_timezone(&chrono::Local).format("%Y-%m-%d %H:%M:%S"))); }
                 if status.pending { ui.label("Local changes are waiting to be uploaded."); }
                 if syncing { ui.spinner(); }
@@ -39,7 +43,7 @@ impl Panel {
                     if settings.can_connect() {
                         ui.label("Choose your Google account in the browser and allow subscription sync. No setup files are needed.");
                     } else {
-                        ui.colored_label(Color32::LIGHT_YELLOW, "Google sign-in is not configured in this build. A release with the app's Google connection is required.");
+                        ui.colored_label(Palette::for_ui(ui).warning, "Google sign-in is not configured in this build. A release with the app's Google connection is required.");
                     }
                 }
                 let mut automatic = settings.auto_sync;
@@ -69,8 +73,8 @@ impl Panel {
                         }
                 });
             });
-            if !self.notice.is_empty() { ui.colored_label(Color32::LIGHT_YELLOW, &self.notice); }
-            frame(ui, "What is synchronized", |ui| {
+            if !self.notice.is_empty() { ui.colored_label(Palette::for_ui(ui).warning, &self.notice); }
+            ui.collapsing("What is synchronized & privacy", |ui| {
                 ui.label("Subscription names, expiry dates, prices, notes, reminder lead times, and paused status.");
                 ui.label(RichText::new("Data is kept in this application's private Google Drive app-data space. No Google Drive desktop folder or additional sync client is required. The app does not request access to all your Drive files.").small());
                 ui.label(RichText::new("Google tokens, AI keys, Telegram credentials, and notification history stay on this computer. Cloud data uses Google's storage protection and HTTPS; this version does not add a master-password encryption layer.").small());
@@ -104,12 +108,13 @@ impl Panel {
 }
 fn frame(ui: &mut egui::Ui, title: &str, content: impl FnOnce(&mut egui::Ui)) {
     egui::Frame::new()
-        .fill(Color32::from_rgb(29, 35, 50))
-        .corner_radius(12)
-        .inner_margin(18)
+        .fill(Palette::for_ui(ui).card)
+        .stroke(egui::Stroke::new(1.0, Palette::for_ui(ui).card_border))
+        .corner_radius(7)
+        .inner_margin(12)
         .show(ui, |ui| {
             ui.set_min_width(ui.available_width());
-            ui.label(RichText::new(title).size(18.).strong());
+            ui.label(RichText::new(title).size(13.).strong());
             ui.add_space(4.);
             content(ui);
         });

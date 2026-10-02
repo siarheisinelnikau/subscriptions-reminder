@@ -1,5 +1,6 @@
+use crate::theme::Palette;
 use crate::{ai, model::Cycle, platform, storage::Store};
-use egui::{self, Color32, RichText};
+use egui::{self, RichText};
 use std::{
     path::Path,
     sync::{Arc, Mutex},
@@ -21,6 +22,12 @@ enum Models {
     Working(String),
     Done(String, Vec<String>),
     Error(String, String),
+}
+
+pub enum Navigation {
+    Stay,
+    Subscriptions,
+    Settings,
 }
 
 pub struct Importer {
@@ -213,7 +220,7 @@ impl Importer {
                 ui.label("Loading models...");
             }
             Models::Error(url, error) if *url == connection.base_url => {
-                ui.colored_label(Color32::LIGHT_RED, error);
+                ui.colored_label(Palette::for_ui(ui).danger, error);
             }
             Models::Done(url, models) if *url == connection.base_url => {
                 egui::ComboBox::from_id_salt("available-ai-models")
@@ -228,14 +235,22 @@ impl Importer {
             _ => (),
         }
         if provider == ai::Provider::AiHub {
-            ui.label(RichText::new("Use your AI-Hub /v1 URL and access token. Universal routes to the active local model; that model must support images.").small());
+            ui.label(
+                RichText::new(
+                    "Universal follows the active AI-Hub model. Select a model with image input.",
+                )
+                .small(),
+            );
         }
         if provider == ai::Provider::OpenRouter {
             ui.label(RichText::new("Use an OpenRouter API key and a model with image input. Provider usage may be billed to your account.").small());
         }
-        ui.label(RichText::new("Keys are stored separately for each provider, encrypted for this Windows account. No AI requests are made at startup. Save settings before recognizing an image.").small());
+        ui.collapsing("Privacy & connection details", |ui| {
+            ui.label("Each provider has its own encrypted API key. Changing the URL clears its key. Images are sent only when you request recognition.");
+            ui.label("Save settings before recognizing an image. OpenAI-compatible endpoints use Chat Completions with image input.");
+        });
         if !self.notice.is_empty() {
-            ui.colored_label(Color32::LIGHT_YELLOW, &self.notice);
+            ui.colored_label(Palette::for_ui(ui).warning, &self.notice);
         }
     }
     pub fn encrypt_keys(&self, settings: &mut ai::Settings) -> Result<(), String> {
@@ -255,46 +270,54 @@ impl Importer {
         ui: &mut egui::Ui,
         ctx: &egui::Context,
         store: &Arc<Mutex<Store>>,
-    ) -> bool {
+    ) -> Navigation {
         self.poll();
+        let colors = Palette::for_ui(ui);
         let mut save_requested = false;
+        let mut navigation = Navigation::Stay;
         ui.horizontal(|ui| {
-            ui.heading("Import from an image");
+            if ui
+                .button("←")
+                .on_hover_text("Back to subscriptions")
+                .clicked()
+            {
+                navigation = Navigation::Subscriptions;
+            }
+            ui.heading("Image import");
             if self
                 .review
                 .as_ref()
-                .is_some_and(|r| !r.candidates.is_empty())
+                .is_some_and(|review| !review.candidates.is_empty())
             {
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    if ui.button("Save selected subscriptions").clicked() {
+                    if ui
+                        .add(colors.primary_button("Save selected subscriptions"))
+                        .clicked()
+                    {
                         save_requested = true;
                     }
                 });
             }
         });
-        ui.label("A screenshot or receipt can fill in your subscriptions for you.");
-        ui.add_space(12.);
         let active = store.lock().unwrap().settings.ai.clone();
-        ui.horizontal_wrapped(|ui| {
-            ui.label(format!(
-                "{} / {}",
+        ui.label(
+            RichText::new(format!(
+                "{} · {}",
                 active.provider.label(),
                 if active.active().model.is_empty() {
                     "Choose a vision model"
                 } else {
                     &active.active().model
                 }
-            ));
-        });
-        let mut settings_requested = false;
-        if ui.button("AI connection settings").clicked() {
-            settings_requested = true;
-        }
-        ui.add_space(8.);
+            ))
+            .small()
+            .color(colors.muted),
+        );
+        ui.add_space(10.0);
         let busy = self.busy();
         ui.horizontal(|ui| {
             if ui
-                .add_enabled(!busy, egui::Button::new("Attach and recognize..."))
+                .add_enabled(!busy, egui::Button::new("Attach and recognize"))
                 .clicked()
                 && let Some(path) = rfd::FileDialog::new()
                     .add_filter("Images", &["png", "jpg", "jpeg", "webp"])
@@ -304,7 +327,7 @@ impl Importer {
                 self.recognize(store, ctx);
             }
             if ui
-                .add_enabled(!busy, egui::Button::new("Paste and recognize"))
+                .add_enabled(!busy, egui::Button::new("Paste image"))
                 .clicked()
             {
                 self.paste(store, ctx);
@@ -312,119 +335,87 @@ impl Importer {
             if ui
                 .add_enabled(
                     !busy && self.attachment.is_some(),
-                    egui::Button::new("Recognize again").fill(Color32::from_rgb(65, 89, 188)),
+                    egui::Button::new("Recognize again"),
                 )
                 .clicked()
             {
                 self.recognize(store, ctx);
             }
-            if busy {
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                if ui.button("Connection settings").clicked() {
+                    navigation = Navigation::Settings;
+                }
+            });
+        });
+        ui.label(
+            RichText::new(
+                "PNG, JPEG, WebP · drop an image or press Ctrl+V · sent to your selected provider",
+            )
+            .small()
+            .color(colors.muted),
+        );
+        if busy {
+            ui.horizontal(|ui| {
                 ui.spinner();
                 ui.label("Reading the image...");
-            }
-        });
-        ui.label(RichText::new("Attach, drop, or paste a PNG, JPEG, or WebP to recognize it with your saved AI provider. The selected image is sent to that service. Review the result before saving.").small().color(Color32::from_rgb(153, 166, 190)));
-        if !self.notice.is_empty() {
-            ui.colored_label(Color32::LIGHT_YELLOW, &self.notice);
+            });
         }
-        egui::ScrollArea::vertical().show(ui, |ui| {
+        if !self.notice.is_empty() {
+            ui.colored_label(colors.warning, &self.notice);
+        }
+        ui.add_space(8.0);
+        egui::ScrollArea::vertical().id_salt("image-review").auto_shrink([false, false]).show(ui, |ui| {
             if let (Some(image), Some(texture)) = (&self.attachment, &self.texture) {
-                ui.add_space(8.);
-                ui.label(format!(
-                    "{} · {} × {}",
-                    image.name, image.width, image.height
-                ));
-                let width = ui.available_width().min(520.);
-                let scale = (width / image.width as f32)
-                    .min(150. / image.height as f32)
-                    .min(1.);
-                ui.image((
-                    texture.id(),
-                    egui::vec2(image.width as f32 * scale, image.height as f32 * scale),
-                ));
+                ui.collapsing(format!("Source image · {} · {} × {}", image.name, image.width, image.height), |ui| {
+                    let scale = (ui.available_width().min(360.0) / image.width as f32).min(120.0 / image.height as f32).min(1.0);
+                    ui.image((texture.id(), egui::vec2(image.width as f32 * scale, image.height as f32 * scale)));
+                });
             }
             if let Some(review) = &mut self.review {
-                ui.add_space(12.);
-                ui.label(
-                    RichText::new(format!(
-                        "Review {} detected subscription(s)",
-                        review.candidates.len()
-                    ))
-                    .size(20.)
-                    .strong(),
-                );
-                ui.label(RichText::new(format!("Recognized with {}", self.source)).small());
+                ui.add_space(8.0);
+                ui.label(RichText::new(format!("Review {} detected subscriptions", review.candidates.len())).size(14.0).strong());
+                ui.label(RichText::new("Correct uncertain fields, then save the selected records.").small().color(colors.muted));
                 if !review.warnings.is_empty() {
-                    egui::CollapsingHeader::new(format!("Model notes ({})", review.warnings.len()))
-                        .show(ui, |ui| {
-                            for warning in &review.warnings {
-                                ui.colored_label(Color32::LIGHT_YELLOW, warning);
-                            }
-                        });
-                }
-                for (index, item) in review.candidates.iter_mut().enumerate() {
-                    ui.push_id(index, |ui| {
-                        egui::Frame::group(ui.style())
-                            .inner_margin(14)
-                            .show(ui, |ui| {
-                                ui.horizontal(|ui| {
-                                    ui.checkbox(&mut item.selected, "Include");
-                                    ui.add(
-                                        egui::TextEdit::singleline(&mut item.sub.name)
-                                            .hint_text("Subscription name")
-                                            .desired_width(290.),
-                                    );
-                                });
-                                ui.horizontal_wrapped(|ui| {
-                                    ui.label("Expires");
-                                    ui.add(
-                                        egui::TextEdit::singleline(&mut item.date)
-                                            .hint_text("YYYY-MM-DD")
-                                            .desired_width(135.),
-                                    );
-                                    ui.label("Price");
-                                    ui.add(
-                                        egui::TextEdit::singleline(&mut item.sub.amount)
-                                            .desired_width(75.),
-                                    );
-                                    ui.add(
-                                        egui::TextEdit::singleline(&mut item.sub.currency)
-                                            .hint_text("Currency")
-                                            .desired_width(75.),
-                                    );
-                                    egui::ComboBox::from_id_salt("import-cycle")
-                                        .selected_text(item.sub.cycle.label())
-                                        .show_ui(ui, |ui| {
-                                            for cycle in Cycle::ALL {
-                                                ui.selectable_value(
-                                                    &mut item.sub.cycle,
-                                                    cycle,
-                                                    cycle.label(),
-                                                );
-                                            }
-                                        });
-                                });
-                                ui.horizontal(|ui| {
-                                    ui.label("Remind days before");
-                                    ui.add(
-                                        egui::DragValue::new(&mut item.sub.reminder_days)
-                                            .range(0..=365),
-                                    );
-                                });
-                                ui.add(
-                                    egui::TextEdit::multiline(&mut item.sub.notes)
-                                        .hint_text("Notes")
-                                        .desired_rows(1)
-                                        .desired_width(f32::INFINITY),
-                                );
-                            });
+                    ui.collapsing(format!("Model notes ({})", review.warnings.len()), |ui| {
+                        for warning in &review.warnings { ui.colored_label(colors.warning, warning); }
                     });
                 }
-                if !review.candidates.is_empty()
-                    && ui.button("Save selected subscriptions").clicked()
-                {
-                    save_requested = true;
+                ui.add_space(4.0);
+                for (index, item) in review.candidates.iter_mut().enumerate() {
+                    ui.push_id(index, |ui| {
+                        egui::Frame::new().fill(colors.card).stroke(egui::Stroke::new(1.0, colors.card_border)).inner_margin(10).corner_radius(6).show(ui, |ui| {
+                            ui.set_min_width(ui.available_width());
+                            ui.horizontal(|ui| {
+                                ui.checkbox(&mut item.selected, "").on_hover_text("Include this subscription");
+                                let name_width = (ui.available_width() - 320.0).max(160.0);
+                                ui.add(egui::TextEdit::singleline(&mut item.sub.name).hint_text("Subscription name").desired_width(name_width));
+                                ui.label("Expires");
+                                ui.add(egui::TextEdit::singleline(&mut item.date).hint_text("YYYY-MM-DD").desired_width(115.0));
+                                egui::ComboBox::from_id_salt("import-cycle").width(102.0).selected_text(item.sub.cycle.label()).show_ui(ui, |ui| {
+                                    for cycle in Cycle::ALL { ui.selectable_value(&mut item.sub.cycle, cycle, cycle.label()); }
+                                });
+                            });
+                            ui.horizontal(|ui| {
+                                ui.label("Price");
+                                ui.add(egui::TextEdit::singleline(&mut item.sub.amount).desired_width(78.0));
+                                ui.add(egui::TextEdit::singleline(&mut item.sub.currency).hint_text("Currency").desired_width(60.0));
+                                ui.add_space(10.0);
+                                ui.label("Remind");
+                                ui.add(egui::DragValue::new(&mut item.sub.reminder_days).range(0..=365));
+                                ui.label("days before expiry");
+                            });
+                            ui.collapsing("Notes", |ui| {
+                                ui.add(egui::TextEdit::multiline(&mut item.sub.notes).desired_rows(2).desired_width(f32::INFINITY));
+                            });
+                        });
+                    });
                 }
+            } else if self.attachment.is_none() {
+                egui::Frame::new().fill(colors.card).stroke(egui::Stroke::new(1.0, colors.card_border)).inner_margin(24).corner_radius(7).show(ui, |ui| {
+                    ui.set_min_width(ui.available_width());
+                    ui.label(RichText::new("Drop a screenshot here").size(15.0).strong());
+                    ui.label(RichText::new("You can also attach a file or paste an image from the clipboard.").color(colors.muted));
+                });
             }
         });
         if save_requested && let Some(review) = &self.review {
@@ -436,9 +427,9 @@ impl Importer {
                     );
                     self.review = None;
                 }
-                Err(e) => self.notice = e,
+                Err(error) => self.notice = error,
             }
         }
-        settings_requested
+        navigation
     }
 }
