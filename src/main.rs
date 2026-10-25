@@ -4,6 +4,8 @@ mod ai;
 mod capture;
 mod drive;
 mod event_loop;
+#[cfg(test)]
+mod icons;
 mod import_ui;
 mod model;
 mod platform;
@@ -24,12 +26,16 @@ use std::{
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.get(1).is_some_and(|s| s == "--apply-update") {
-        if let Err(e) = updates::apply_update(&args) {
+        if let Err(e) = updates::apply_update() {
             platform::show_error(&e);
         }
         return;
     }
     if let Err(error) = run(&args) {
+        if args.iter().any(|arg| arg == "--diagnostics") {
+            eprintln!("Subscriptions Reminder diagnostic: {error}");
+            std::process::exit(1);
+        }
         platform::show_error(&error);
     }
 }
@@ -62,9 +68,15 @@ fn run(args: &[String]) -> Result<(), String> {
     };
     let launch = ui::Launch {
         capture_dir: argument_path("--capture-dir")?,
+        diagnostic: argument_path("--diagnostics")?,
         image: argument_path("--image")?,
         recognize: args.iter().any(|s| s == "--recognize"),
     };
+    if launch.diagnostic.is_some()
+        && (!args.iter().any(|s| s == "--data-dir") || !args.iter().any(|s| s == "--demo"))
+    {
+        return Err("Diagnostics require --demo and an explicit isolated --data-dir.".into());
+    }
     fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
     let config_dir = config_dir.canonicalize().map_err(|e| e.to_string())?;
     let identity = format!(
@@ -128,6 +140,12 @@ fn run(args: &[String]) -> Result<(), String> {
     }
     let store = Arc::new(Mutex::new(store));
     let platform = platform::Platform::start(identity)?;
+    if let Some(index) = args.iter().position(|s| s == "--cleanup-update") {
+        let directory = args
+            .get(index + 1)
+            .ok_or("--cleanup-update requires a directory")?;
+        updates::cleanup(PathBuf::from(directory))?;
+    }
     reminders::start(store.clone(), platform.clone());
     let stopped = platform.clone();
     let result = event_loop::run(

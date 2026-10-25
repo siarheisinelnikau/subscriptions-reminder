@@ -15,6 +15,7 @@ use std::sync::{Arc, Mutex, atomic::Ordering};
 
 pub struct Launch {
     pub capture_dir: Option<std::path::PathBuf>,
+    pub diagnostic: Option<std::path::PathBuf>,
     pub image: Option<std::path::PathBuf>,
     pub recognize: bool,
 }
@@ -603,7 +604,7 @@ impl App {
                             updates::State::Error(error) => { ui.colored_label(colors.warning, error); },
                             updates::State::Downloading(progress) => { ui.add(egui::ProgressBar::new(progress).show_percentage().text("Downloading and verifying update...")); },
                             updates::State::Available(release) => {
-                                ui.colored_label(colors.accent, format!("Version {} is available.", release.tag_name));
+                                ui.colored_label(colors.accent, format!("Version {} is available.", release.version));
                                 if ui.add(colors.primary_button("Download and install")).clicked() {
                                     let config = self.store.lock().unwrap().config_dir.clone();
                                     updates::install(release, self.updates.clone(), ctx.clone(), self.platform.clone(), config);

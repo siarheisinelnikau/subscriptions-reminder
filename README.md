@@ -163,3 +163,17 @@ The Windows workflow checks formatting, runs tests and Clippy, builds the EXE, a
 ## License
 
 MIT.
+
+## Shared updater source
+
+Build with Rust 1.95 or newer. Keep `rust-auto-updator` beside this repository: the core path dependency is `../rust-auto-updator/crates/rust-auto-updator`. The shared core handles canonical release selection, throttled progress, SHA-256 and PE verification, same-volume replacement, rollback and cleanup. This application owns the saved startup preference, its Updates UI and `--data-dir` restart arguments. Downloads/installations still require the user's action. Earlier releases copy their own executable as the legacy helper, so their helper can install this new executable normally.
+
+A standalone checkout and current hosted CI require that sibling source to be provisioned first. The dependency is not published or fetched from a guessed remote. GUI/tray integration and subjective input latency are separate from noninteractive diagnostic evidence.
+
+For a finite isolated CPU/GDI idle, minimize, restore and hidden diagnostic (no OS input):
+
+```powershell
+.\target\release\subscriptions-reminder.exe --demo --data-dir .qa\rendering-data --diagnostics .qa\rendering.json
+```
+
+The process exits after about 17 seconds and records actual layout/raster/present counters plus process CPU time. The normal app does not run this diagnostic schedule. Native icon-resource proof is available through `scripts/Check-Icons.py`; its PNG renders the embedded EXE icons with Win32, not a screenshot of the OS tray.
