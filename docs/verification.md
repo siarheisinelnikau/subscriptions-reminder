@@ -40,3 +40,29 @@ All 37 unit tests and three opt-in desktop integration tests pass, with formatti
 - Downloading, replacing the installed executable, and restarting through the updater. Version/asset/checksum logic is covered by tests; the full installation flow is not yet verified against a newer published release.
 
 No Telegram credentials or real subscription data were used during verification. The private AI-Hub credential was used with explicit user authorization, kept outside the repository, and stored with Windows DPAPI encryption. README images contain demonstration data only.
+
+
+## Shared updater and rendering audit (2026-11-01)
+
+Reusable release discovery, HTTPS/download progress, checksum/PE verification and installation/rollback now live in the sibling `rust-auto-updator` core. The product adapter keeps the saved startup preference, the Updates section, historical single-EXE and `-x64` selection, and the exact data-directory restart arguments. The new helper/cleanup routes run before the normal window startup. The previous released updater uses its own old executable as its helper, so installing the migrated executable does not require the new protocol in that older helper.
+
+The application ICO now contains native 16/20/24/32/40/48/64/128/256 px images with proper alpha and AND masks. Window and taskbar icons load those resources at the window DPI; the tray loads the small native metric with `LoadIconMetric`. Small icons retain the calendar artwork with 14×14 visible bounds in the 16px image.
+
+Background repaint wakeups previously reached egui layout before the hidden-window raster check. Hidden/minimized/zero-area windows now stop before UI construction; callbacks still dispatch quit and native restore. Cached OS repaint blits are also blocked while hidden. The event loop waits on actual repaint/diagnostic deadlines and explicitly wakes the final Win32 wait on exit.
+
+Formatting, all-target Clippy, and 38 Rust regressions passed. Three existing desktop tests that inject OS messages were intentionally left ignored. The first sandbox test run could not use localhost fixtures or persist files in sandbox TEMP; the complete successful rerun used isolated repository `.qa/temp` and localhost-capable execution. No personal Google/AI/Telegram service was contacted by those synthetic fixtures.
+
+The finite `--diagnostics` mode requires explicit `--demo --data-dir`; it disables external input, skips the taskbar and exits after sampling. `scripts/Check-Rendering.py` checks actual layouts/rasters/presents and process CPU for settled visible, minimized, restored and hidden intervals. It does not establish input latency, tray clicks, mixed-monitor behavior or compositor/GPU telemetry.
+
+
+The final optimized diagnostic (PID **31616**, normal-shell execution after sandbox tray registration was rejected) passed: visible idle **5.00 s**, minimized **2.00 s**, restored idle **3.00 s** and hidden **2.00 s** each had **0 layouts, 0 rasters, 0 presents**, and no measurable process CPU-time increase. CPU values are quantized by Windows process-time resolution, rather than a claim of physically zero work. Minimized and hidden intervals each received a deliberately requested background repaint wake and skipped all UI work; restore generated two useful frames before settling. The process exited automatically. Source tracing and the native runtime module query agree on the CPU software rasterizer and Win32 GDI; selected GPU render modules were absent. GPU/compositor telemetry and real input/tray interactions were not measured.
+
+The application now explicitly activates common-controls v6 before importing `LoadIconMetric`; otherwise its native icon-loading path can fail before normal startup. Sandbox execution separately could not register a tray icon, while normal-shell diagnostic startup passed the same required registration path. No diagnostic suppression or fake successful tray startup was added.
+
+All nine final EXE icon resources were decoded, checked for nonblank alpha/transparency and native dimensions, and rendered with Win32 on light/dark backgrounds. The actual window returned **16×16** and **32×32** icon handles matching those resources. The same production `LoadIconMetric` call loaded a native **16×16** tray-resource handle. These images prove resources and assignments, not OS tray/taskbar appearance or clicks.
+
+![Native rendering of the final executable icon resources](screenshots/icon-resources.png)
+
+![Window and taskbar icon handles matching executable resources](screenshots/icon-assignment.png)
+
+![Production tray resource loaded with the native small-icon metric](screenshots/tray-metric.png)

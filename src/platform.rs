@@ -93,7 +93,7 @@ impl Platform {
             data.hIcon = create_icon();
             data.uCallbackMessage = TRAY;
             fill(&mut data.szTip, "Subscriptions Reminder");
-            if Shell_NotifyIconW(NIM_ADD, &data) == 0 {
+            if data.hIcon.is_null() || Shell_NotifyIconW(NIM_ADD, &data) == 0 {
                 DestroyIcon(data.hIcon);
                 DestroyWindow(hwnd);
                 let _ = tx.send(Err("Windows could not create the tray icon. Reminders cannot run safely in the background.".into()));
@@ -300,40 +300,18 @@ pub fn open_existing(class: &str) -> bool {
     }
 }
 
-pub fn icon_pixels() -> Vec<u8> {
-    let mut pixels = vec![0; 32 * 32 * 4];
-    for y in 0..32 {
-        for x in 0..32 {
-            let color = if (3..29).contains(&x) && (4..29).contains(&y) {
-                if y < 12 || ((x == 10 || x == 16 || x == 22) && (y == 17 || y == 23)) {
-                    [76, 104, 232, 255]
-                } else {
-                    [234, 239, 255, 255]
-                }
-            } else {
-                [0, 0, 0, 0]
-            };
-            pixels[(y * 32 + x) * 4..(y * 32 + x + 1) * 4].copy_from_slice(&color);
-        }
-    }
-    pixels
-}
 unsafe fn create_icon() -> HICON {
-    let mut pixels = icon_pixels();
-    for p in pixels.chunks_exact_mut(4) {
-        p.swap(0, 2);
-    }
-    unsafe {
-        CreateIcon(
+    let mut icon = null_mut();
+    // SAFETY: Resource 1 is embedded by build.rs; LoadIconMetric returns an owned handle.
+    let result = unsafe {
+        windows_sys::Win32::UI::Controls::LoadIconMetric(
             GetModuleHandleW(null()),
-            32,
-            32,
-            1,
-            32,
-            [0u8; 128].as_ptr(),
-            pixels.as_ptr(),
+            std::ptr::without_provenance::<u16>(1),
+            windows_sys::Win32::UI::Controls::LIM_SMALL,
+            &mut icon,
         )
-    }
+    };
+    if result < 0 { null_mut() } else { icon }
 }
 
 pub fn protect(text: &str) -> Result<Vec<u8>, String> {

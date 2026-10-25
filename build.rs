@@ -1,42 +1,69 @@
+#[path = "src/icons.rs"]
+mod icons;
 use std::{env, fs, path::PathBuf};
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=src/icons.rs");
+    println!("cargo:rerun-if-changed=assets/app.manifest");
     bundle_google_client();
     if env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return;
     }
     let path = PathBuf::from(env::var_os("OUT_DIR").unwrap()).join("app.ico");
-    let mut image = vec![];
-    for value in [40u32, 32, 64] {
-        image.extend(value.to_le_bytes());
-    }
-    image.extend(1u16.to_le_bytes());
-    image.extend(32u16.to_le_bytes());
-    for value in [0u32, 4096, 0, 0, 0, 0] {
-        image.extend(value.to_le_bytes());
-    }
-    for y in (0..32).rev() {
-        for x in 0..32 {
-            let pixel = if (3..29).contains(&x) && (4..29).contains(&y) {
-                if y < 12 || ((x == 10 || x == 16 || x == 22) && (y == 17 || y == 23)) {
-                    [232, 104, 76, 255]
-                } else {
-                    [255, 239, 234, 255]
-                }
-            } else {
-                [0, 0, 0, 0]
-            };
-            image.extend(pixel);
+    // Keep native tray/DPI variants instead of stretching one 32px bitmap.
+    let sizes = [16u32, 20, 24, 32, 40, 48, 64, 128, 256];
+    let mut images = Vec::new();
+    for size in sizes {
+        let rgba = icons::pixels(size);
+        let mask_stride = size.div_ceil(32) * 4;
+        let mut image = Vec::new();
+        for value in [40u32, size, size * 2] {
+            image.extend(value.to_le_bytes());
         }
+        image.extend(1u16.to_le_bytes());
+        image.extend(32u16.to_le_bytes());
+        for value in [0u32, size * size * 4, 0, 0, 0, 0] {
+            image.extend(value.to_le_bytes());
+        }
+        for y in (0..size).rev() {
+            for x in 0..size {
+                let at = ((y * size + x) * 4) as usize;
+                image.extend([rgba[at + 2], rgba[at + 1], rgba[at], rgba[at + 3]]);
+            }
+        }
+        for y in (0..size).rev() {
+            let mut mask = vec![0u8; mask_stride as usize];
+            for x in 0..size {
+                if rgba[((y * size + x) * 4 + 3) as usize] == 0 {
+                    mask[(x / 8) as usize] |= 0x80 >> (x % 8);
+                }
+            }
+            image.extend(mask);
+        }
+        images.push(image);
     }
-    image.extend([0u8; 128]);
-    let mut ico = vec![0, 0, 1, 0, 1, 0, 32, 32, 0, 0, 1, 0, 32, 0];
-    ico.extend((image.len() as u32).to_le_bytes());
-    ico.extend(22u32.to_le_bytes());
-    ico.extend(image);
+    let mut ico = vec![0, 0, 1, 0];
+    ico.extend((sizes.len() as u16).to_le_bytes());
+    let mut offset = 6 + 16 * sizes.len() as u32;
+    for (size, image) in sizes.into_iter().zip(&images) {
+        ico.extend([size as u8, size as u8, 0, 0, 1, 0, 32, 0]);
+        ico.extend((image.len() as u32).to_le_bytes());
+        ico.extend(offset.to_le_bytes());
+        offset += image.len() as u32;
+    }
+    for image in images {
+        ico.extend(image);
+    }
     fs::write(&path, ico).expect("Cannot write application icon");
+    let manifest = path.with_extension("manifest");
+    fs::write(
+        &manifest,
+        include_str!("assets/app.manifest").replace("@VERSION@", env!("CARGO_PKG_VERSION")),
+    )
+    .expect("Cannot prepare the common-controls activation manifest");
     winresource::WindowsResource::new()
+        .set_manifest_file(manifest.to_str().unwrap())
         .set_icon(path.to_str().unwrap())
         .set("ProductName", "Subscriptions Reminder")
         .set(
