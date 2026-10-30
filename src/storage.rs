@@ -9,6 +9,7 @@ use std::{
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Settings {
+    pub ai: crate::ai::Settings,
     pub data_dir: PathBuf,
     pub startup_update_check: bool,
     pub windows_notifications: bool,
@@ -21,6 +22,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
+            ai: crate::ai::Settings::default(),
             data_dir: PathBuf::new(),
             startup_update_check: true,
             windows_notifications: true,
