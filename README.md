@@ -18,12 +18,12 @@ A small Rust desktop app that keeps subscription expiry dates out of your head. 
 - Mark a subscription renewed to advance its expiry date by one billing period.
 - Receive Windows notifications while the main window is hidden in the tray.
 - Optionally send reminders through your own Telegram bot.
-- Save subscriptions locally or in a folder synced by Google Drive for desktop.
+- Sign in to Google Drive in your browser and synchronize directly, with an offline local copy and conflict review.
 - Check for updates and download, verify, install, and restart from Settings.
 
 ## Getting started
 
-1. Download `SubscriptionsReminder-v0.2.0.exe` from [Releases](https://github.com/siarheisinelnikau/subscriptions-reminder/releases).
+1. Download `SubscriptionsReminder-v0.3.0.exe` from [Releases](https://github.com/siarheisinelnikau/subscriptions-reminder/releases).
 2. Put it in a writable folder where you plan to keep it, then launch it.
 3. Click **Add subscription**. Enter its name, expiry date (`YYYY-MM-DD`), and reminder lead time.
 4. In **Settings**, optionally enable **Start with Windows**. Closing the window keeps the app running; use the tray icon or launch the EXE again to reopen it. **Quit** stops reminders.
@@ -63,15 +63,36 @@ Image import uses the standard Chat Completions endpoint with an inline base64 i
 
 Dates that are not visible remain unresolved and must be entered before saving. The model's notes explain uncertainty. All selected records are validated before a single data-file save; invalid selected records prevent a partial import. Records with the same name and expiry date as an existing entry are skipped. Images are not copied to the subscription data folder.
 
-## Local storage and Google Drive
+## Google Drive synchronization
+
+![Direct Google Drive connection and setup screen](docs/screenshots/google-drive.png)
+
+Google Drive is connected directly through the Drive API. You do not need Drive for desktop, a mounted Drive folder, or another sync application. The first connection requires a **Google Cloud Desktop OAuth client**. This release does not bundle a shared OAuth client; see the [one-time setup guide](docs/google-drive-setup.md).
+
+1. Open **Google Drive** in the sidebar and click **Import Google OAuth JSON...**. Select the Desktop app client JSON downloaded from your Google Cloud project.
+2. Click **Connect Google Drive**. Finish sign-in and grant the requested app-data permission in your system browser.
+3. Return to the app. Your current local subscriptions merge with the selected Google account. **Synchronize automatically** is enabled by default.
+4. On another computer, import the same OAuth client JSON and sign in to the same Google account.
+
+Local changes are uploaded after a short debounce; other devices are checked every 60 seconds. **Sync now** starts an immediate round. Disabling automatic synchronization prevents future background sync and token-refresh requests; manual syncing remains available. An in-flight request may finish when paused or disconnected. Synchronization runs independently of window rendering.
+
+Independent subscription changes merge automatically. Concurrent changes to the same subscription, including edit-versus-delete, retain their versions under **Review conflicts**. Choose a version or keep all subscription versions as separate records. Deleted records retain synchronization tombstones, so an old device snapshot does not restore them. Credentials and notification history are device-local.
+
+The app uses Google's private `appDataFolder` and the `drive.appdata` scope, not permission to all Drive files. Each installation writes its own snapshot and reads peer snapshots, so simultaneous device uploads do not replace each other's files. Sync data includes subscriptions, notes, dates, prices, reminder lead times, paused state, and revision metadata. It does **not** include AI keys, Telegram credentials, Google tokens, or attached source images. Google tokens are encrypted locally with Windows DPAPI. Transfer uses HTTPS and Google's storage protection; this release does not add master-password encryption to cloud data.
+
+Offline edits stay local and are retried with backoff. Expired or revoked sessions request reconnection without deleting local data. **Disconnect this computer** stops using its saved Google session while retaining local data and cloud snapshots. Revoke access through your Google Account's connected-app controls if needed.
+
+Use a separate private settings directory for each installation. Do not copy its Google credentials or `drive` checkpoint directory between computers; connect each independently. Sync payloads are limited to 8 MB, and checkpoints retain causal history and deletions.
+
+## Local storage
 
 Settings live in `%LOCALAPPDATA%\SubscriptionsReminder\settings.json`. By default, subscription data lives in `%LOCALAPPDATA%\SubscriptionsReminder\data\subscriptions.json`.
 
-In Settings, choose **Choose data folder...** and select a folder already managed by Google Drive for desktop (or another file sync application). An existing `subscriptions.json` is loaded without overwriting it; an empty folder receives a copy of the current list. The old folder is retained. The application does not require Google credentials and does not contain direct Google OAuth integration.
+The local copy remains available offline. **Settings → Google Drive & local storage** links to the connection screen. **Change local data folder...** is an advanced option available while Drive is disconnected; it is not needed for cloud synchronization. An existing `subscriptions.json` is loaded without overwriting it; an empty folder receives a copy of the current list. The old folder is retained.
 
-![Telegram, storage, and update settings](docs/screenshots/storage-updates.png)
+![Local offline storage and application update settings](docs/screenshots/storage-updates.png)
 
-Data saves use a temporary file, atomic replacement, and a `.json.bak` copy of the previous file. Invalid or externally changed data is not silently overwritten. External changes are checked in the background. **Use one computer at a time and let Drive finish syncing before switching devices.** The application does not merge simultaneous edits or Drive conflict files. Subscription files and backups are plain JSON; use a trusted sync folder.
+Data saves use a temporary file, atomic replacement, and a `.json.bak` copy of the previous file. Invalid or externally changed data is not silently overwritten. External changes are checked in the background. Local subscription files and backups are plain JSON. Google Drive replication checkpoints live in the private settings directory's `drive` subdirectory, outside the selected data folder.
 
 If a JSON file becomes invalid, close the application, keep a copy of the damaged file, and restore the matching `.json.bak` file. The app reports the affected path instead of resetting your data. A missing data file on later launches is reported as unavailable, which prevents an offline sync folder from silently becoming an empty store.
 
@@ -97,12 +118,12 @@ The packaged EXE and `SHA256SUMS.txt` appear in `dist/`. The MSVC C runtime is s
 For isolated UI testing, use a separate local settings directory:
 
 ```powershell
-./dist/SubscriptionsReminder-v0.2.0.exe --data-dir ./target/manual-test --demo
+./dist/SubscriptionsReminder-v0.3.0.exe --data-dir ./target/manual-test --demo
 ```
 
 `--demo` only inserts sample subscriptions into an empty data store and disables automatic update checks and reminder notifications for that demo store. `--background` starts with the main window hidden. Instances share one window and monitor per settings directory.
 
-`--image PATH` opens an image in the import view. Add `--recognize` to start recognition using the saved AI connection. For cursor-free documentation screenshots of the actual rendered application, `--capture-dir PATH` captures the dashboard, settings, lower settings, and import view, then exits. When recognition is active, the import capture waits for its result and saves a local `recognition.json` report alongside the PNGs.
+`--image PATH` opens an image in the import view. Add `--recognize` to start recognition using the saved AI connection. For cursor-free documentation screenshots, `--capture-dir PATH` captures the actual dashboard, settings, lower settings, Google Drive connection screen, and import view, then exits. When recognition is active, the import capture waits for its result and saves a local `recognition.json` report alongside the PNGs.
 
 The Windows workflow checks formatting, runs tests and Clippy, builds the EXE, and packages checksums. On `main`, a package version without a published release is published with `docs/releases/vVERSION.md` as its description. Existing published releases are never modified. Review and update the release notes before increasing the package version.
 

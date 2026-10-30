@@ -106,7 +106,7 @@ impl Subscription {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Database {
     pub schema_version: u32,
     pub subscriptions: Vec<Subscription>,
