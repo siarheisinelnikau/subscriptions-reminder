@@ -19,6 +19,17 @@ pub struct Client {
     pub secret: String,
 }
 impl Client {
+    pub const BUNDLED_JSON: &'static [u8] =
+        include_bytes!(concat!(env!("OUT_DIR"), "/google-oauth.json"));
+
+    pub fn bundled() -> Result<Option<Self>, String> {
+        let bytes = Self::BUNDLED_JSON;
+        if bytes.trim_ascii() == b"null" {
+            return Ok(None);
+        }
+        Self::parse(bytes).map(Some)
+    }
+
     pub fn parse(bytes: &[u8]) -> Result<Self, String> {
         if bytes.len() > 64 * 1024 {
             return Err("The OAuth configuration file is too large.".into());
@@ -358,6 +369,13 @@ mod tests {
     use super::*;
     use crate::drive::test_support::server;
     use serde_json::json;
+    #[test]
+    fn bundled_configuration_is_a_desktop_client_or_explicitly_disabled() {
+        if let Some(client) = Client::bundled().unwrap() {
+            assert!(client.id.ends_with(".apps.googleusercontent.com"));
+            assert!(!client.id.starts_with("sample."));
+        }
+    }
     #[test]
     fn pkce_matches_rfc_vector_and_authorization_requests_minimal_offline_scope() {
         assert_eq!(

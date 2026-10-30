@@ -2,6 +2,7 @@ use std::{env, fs, path::PathBuf};
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
+    bundle_google_client();
     if env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("windows") {
         return;
     }
@@ -45,4 +46,40 @@ fn main() {
         .set("LegalCopyright", "Copyright (c) 2026 siarheisinelnikau")
         .compile()
         .expect("Cannot compile Windows application resources");
+}
+
+fn bundle_google_client() {
+    const LOCAL_CLIENT: &str = "src/drive/google-oauth.json";
+    println!("cargo:rerun-if-changed={LOCAL_CLIENT}");
+    println!("cargo:rerun-if-env-changed=SUBSCRIPTIONS_GOOGLE_OAUTH_JSON");
+    println!("cargo:rerun-if-env-changed=SUBSCRIPTIONS_REQUIRE_GOOGLE_OAUTH");
+    let supplied = env::var("SUBSCRIPTIONS_GOOGLE_OAUTH_JSON")
+        .ok()
+        .filter(|value| !value.trim().is_empty());
+    let configuration = supplied.unwrap_or_else(|| match fs::read_to_string(LOCAL_CLIENT) {
+        Ok(value) => value,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => "null".into(),
+        Err(_) => panic!("Cannot read the local Google OAuth client configuration"),
+    });
+    let document: serde_json::Value = serde_json::from_str(&configuration).unwrap_or_else(|_| {
+        panic!("Invalid Google OAuth client JSON; configuration values were not logged")
+    });
+    let required = env::var("SUBSCRIPTIONS_REQUIRE_GOOGLE_OAUTH").as_deref() == Ok("1");
+    if required {
+        let client = document.get("installed");
+        let configured = client
+            .and_then(|value| value.get("client_id"))
+            .and_then(|value| value.as_str())
+            .is_some_and(|id| !id.is_empty() && id.ends_with(".apps.googleusercontent.com"))
+            && client
+                .and_then(|value| value.get("client_secret"))
+                .and_then(|value| value.as_str())
+                .is_some_and(|secret| !secret.is_empty());
+        assert!(
+            configured,
+            "Release Google sign-in requires the GOOGLE_DESKTOP_OAUTH_JSON repository Actions secret containing the Desktop client JSON"
+        );
+    }
+    let destination = PathBuf::from(env::var_os("OUT_DIR").unwrap()).join("google-oauth.json");
+    fs::write(destination, configuration).expect("Cannot prepare the bundled Google OAuth client");
 }

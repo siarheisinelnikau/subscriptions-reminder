@@ -9,7 +9,7 @@ use crate::{
     updates,
 };
 use chrono::Local;
-use eframe::egui::{self, Color32, RichText};
+use egui::{self, Color32, RichText};
 use std::sync::{Arc, Mutex, atomic::Ordering};
 
 pub struct Launch {
@@ -53,13 +53,13 @@ pub struct App {
 
 impl App {
     pub fn new(
-        cc: &eframe::CreationContext<'_>,
+        ctx: &egui::Context,
         store: Arc<Mutex<Store>>,
         platform: Arc<Platform>,
         hwnd: isize,
         launch: Launch,
     ) -> Self {
-        let mut style = (*cc.egui_ctx.style()).clone();
+        let mut style = (*ctx.style()).clone();
         style.visuals = egui::Visuals::dark();
         style.visuals.panel_fill = BG;
         style.visuals.window_fill = PANEL;
@@ -86,19 +86,19 @@ impl App {
         style
             .text_styles
             .insert(egui::TextStyle::Heading, egui::FontId::proportional(27.));
-        cc.egui_ctx.set_style(style);
-        platform.bind(hwnd, cc.egui_ctx.clone());
+        ctx.set_style(style);
+        platform.bind(hwnd, ctx.clone());
         let draft = store.lock().unwrap().settings.clone();
         let token = platform::unprotect(&draft.telegram_token_protected).unwrap_or_default();
         let updates = Arc::new(Mutex::new(updates::State::Idle));
         if draft.startup_update_check {
-            updates::check(updates.clone(), cc.egui_ctx.clone());
+            updates::check(updates.clone(), ctx.clone());
         }
         let mut importer = Importer::new(&draft.ai);
-        let drive = drive::Controller::new(store.clone(), platform.clone(), cc.egui_ctx.clone());
+        let drive = drive::Controller::new(store.clone(), platform.clone(), ctx.clone());
         let page = if let Some(path) = &launch.image {
-            if importer.load_file(path, &cc.egui_ctx) && launch.recognize {
-                importer.recognize(&store, &cc.egui_ctx);
+            if importer.load_file(path, ctx) && launch.recognize {
+                importer.recognize(&store, ctx);
             }
             1
         } else {
@@ -498,8 +498,8 @@ fn section(ui: &mut egui::Ui, title: &str, content: impl FnOnce(&mut egui::Ui)) 
     ui.add_space(6.);
 }
 
-impl eframe::App for App {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+impl App {
+    pub fn draw(&mut self, ctx: &egui::Context) {
         self.importer.poll();
         if let Some(capture) = &mut self.capture {
             if let Err(error) = capture.tick(ctx, self.importer.busy(), self.importer.report()) {
@@ -599,9 +599,19 @@ impl eframe::App for App {
                     });
                 });
         }
-        ctx.request_repaint_after(std::time::Duration::from_secs(15));
+        // Expiry labels change at local midnight. Background jobs wake the UI
+        // explicitly when their data changes; idle windows need no heartbeat.
+        let now = Local::now();
+        let until_midnight = now
+            .date_naive()
+            .succ_opt()
+            .and_then(|date| date.and_hms_opt(0, 0, 0))
+            .and_then(|midnight| midnight.and_local_timezone(Local).earliest())
+            .and_then(|midnight| (midnight - now).to_std().ok())
+            .unwrap_or(std::time::Duration::from_secs(3600));
+        ctx.request_repaint_after(until_midnight);
     }
-    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
+    pub fn shutdown(&mut self) {
         self.platform.stop();
     }
 }
