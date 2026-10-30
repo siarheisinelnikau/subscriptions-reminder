@@ -1,5 +1,6 @@
 use crate::{
     capture::Capture,
+    drive,
     import_ui::Importer,
     model::{Cycle, Subscription},
     platform::{self, Platform},
@@ -46,6 +47,8 @@ pub struct App {
     task_status: Arc<Mutex<Option<String>>>,
     importer: Importer,
     capture: Option<Capture>,
+    drive: drive::Controller,
+    drive_panel: drive::ui::Panel,
 }
 
 impl App {
@@ -92,6 +95,7 @@ impl App {
             updates::check(updates.clone(), cc.egui_ctx.clone());
         }
         let mut importer = Importer::new(&draft.ai);
+        let drive = drive::Controller::new(store.clone(), platform.clone(), cc.egui_ctx.clone());
         let page = if let Some(path) = &launch.image {
             if importer.load_file(path, &cc.egui_ctx) && launch.recognize {
                 importer.recognize(&store, &cc.egui_ctx);
@@ -116,6 +120,8 @@ impl App {
             task_status: Arc::new(Mutex::new(None)),
             importer,
             capture: launch.capture_dir.map(Capture::new),
+            drive,
+            drive_panel: drive::ui::Panel::default(),
         }
     }
 
@@ -133,7 +139,7 @@ impl App {
                         .size(16.),
                 );
                 ui.add_space(26.);
-                for (i, title) in ["Subscriptions", "Image import", "Settings"]
+                for (i, title) in ["Subscriptions", "Image import", "Settings", "Google Drive"]
                     .iter()
                     .enumerate()
                 {
@@ -157,6 +163,21 @@ impl App {
                             .color(MUTED),
                     );
                     ui.add_space(12.);
+                    let cloud = self.drive.status();
+                    let label = if !cloud.conflicts.is_empty() {
+                        "Drive: review conflicts"
+                    } else {
+                        match cloud.phase {
+                            drive::Phase::Connected => "Drive: connected",
+                            drive::Phase::Syncing => "Drive: syncing...",
+                            drive::Phase::Offline => "Drive: offline",
+                            drive::Phase::SignInRequired => "Drive: sign-in required",
+                            _ => "Drive: not connected",
+                        }
+                    };
+                    if ui.small_button(label).clicked() {
+                        self.page = 3;
+                    }
                     ui.label(
                         RichText::new("Closing the window keeps reminders running in the tray.")
                             .small()
@@ -352,12 +373,14 @@ impl App {
                     std::thread::spawn(move || { *status.lock().unwrap() = Some(match reminders::send_telegram(&settings, "Subscriptions Reminder: your test reminder is working.") { Ok(()) => "Telegram test delivered.".into(), Err(e) => e }); ctx.request_repaint(); });
                 }
             });
-            section(ui, "Data & Google Drive", |ui| {
+            section(ui, "Google Drive & local storage", |ui| {
+                ui.label("Connect Google Drive directly for automatic synchronization and browser sign-in.");
+                if ui.button("Open Google Drive settings").clicked() { self.page = 3; }
                 let dir = self.store.lock().unwrap().settings.data_dir.clone();
-                ui.label(RichText::new(dir.display().to_string()).monospace().small());
-                ui.label(RichText::new("Choose a folder managed by Google Drive for desktop to sync subscriptions and notes. An existing subscriptions.json is loaded; an empty folder receives your current list.").small().color(MUTED));
-                ui.label(RichText::new("Use one computer at a time and wait for Drive to finish syncing before switching. JSON backups are saved alongside the data.").small().color(MUTED));
-                if ui.button("Choose data folder...").clicked()
+                ui.label(RichText::new(format!("Local offline copy: {}", dir.display())).monospace().small());
+                ui.label(RichText::new("Local JSON backups are kept alongside the data. Changing the local data location is an advanced option; disconnect Drive first.").small().color(MUTED));
+                let connected = self.store.lock().unwrap().settings.drive.connected();
+                if ui.add_enabled(!connected, egui::Button::new("Change local data folder...")).clicked()
                     && let Some(dir) = rfd::FileDialog::new().set_directory(&dir).pick_folder() {
                         let mut store = self.store.lock().unwrap();
                         self.notice = match store.use_folder(dir) { Ok(()) => { self.draft.data_dir = store.settings.data_dir.clone(); "Data folder updated.".into() }, Err(e) => e };
@@ -403,6 +426,7 @@ impl App {
             let previous = store.settings.clone();
             let mut next = self.draft.clone();
             next.deliveries = store.settings.deliveries.clone();
+            next.drive = store.settings.drive.clone();
             next.data_dir = store.settings.data_dir.clone();
             store.settings = next;
             if let Err(e) = store.save_settings() {
@@ -544,6 +568,7 @@ impl eframe::App for App {
                             self.page = 2;
                         }
                     }
+                    3 => self.drive_panel.show(ui, &self.drive, &self.store),
                     _ => self.settings(ui, ctx),
                 }
             });
