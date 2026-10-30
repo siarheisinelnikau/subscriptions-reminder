@@ -1,5 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod ai;
+mod capture;
+mod import_ui;
 mod model;
 mod platform;
 mod reminders;
@@ -44,6 +47,21 @@ fn run(args: &[String]) -> Result<(), String> {
     } else {
         PathBuf::from(std::env::var_os("LOCALAPPDATA").ok_or("LOCALAPPDATA is not available")?)
             .join("SubscriptionsReminder")
+    };
+    let argument_path = |flag: &str| -> Result<Option<PathBuf>, String> {
+        args.iter()
+            .position(|s| s == flag)
+            .map(|i| {
+                args.get(i + 1)
+                    .map(PathBuf::from)
+                    .ok_or_else(|| format!("{flag} requires a path"))
+            })
+            .transpose()
+    };
+    let launch = ui::Launch {
+        capture_dir: argument_path("--capture-dir")?,
+        image: argument_path("--image")?,
+        recognize: args.iter().any(|s| s == "--recognize"),
     };
     fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
     let config_dir = config_dir.canonicalize().map_err(|e| e.to_string())?;
@@ -97,7 +115,14 @@ fn run(args: &[String]) -> Result<(), String> {
     reminders::start(store.clone(), platform.clone());
     let options = eframe::NativeOptions {
         viewport: eframe::egui::ViewportBuilder::default()
-            .with_inner_size([1120., 900.])
+            .with_inner_size([
+                1120.,
+                if launch.capture_dir.is_some() {
+                    1000.
+                } else {
+                    900.
+                },
+            ])
             .with_min_inner_size([860., 620.])
             .with_visible(!args.iter().any(|s| s == "--background"))
             .with_icon(eframe::egui::IconData {
@@ -118,7 +143,7 @@ fn run(args: &[String]) -> Result<(), String> {
                 RawWindowHandle::Win32(handle) => handle.hwnd.get(),
                 _ => return Err("Only Windows is currently supported".into()),
             };
-            Ok(Box::new(ui::App::new(cc, store, platform, hwnd)))
+            Ok(Box::new(ui::App::new(cc, store, platform, hwnd, launch)))
         }),
     )
     .map_err(|e| format!("Cannot start the application: {e}"));
