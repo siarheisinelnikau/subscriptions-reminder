@@ -35,6 +35,9 @@ jobs:
       - name: Check code
         run: cargo clippy --locked --all-targets -- -D warnings
       - name: Build portable executable
+        env:
+          SUBSCRIPTIONS_GOOGLE_OAUTH_JSON: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && secrets.GOOGLE_DESKTOP_OAUTH_JSON || '' }}
+          SUBSCRIPTIONS_REQUIRE_GOOGLE_OAUTH: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && '1' || '' }}
         run: cargo build --release --locked
       - name: Package executable and checksums
         shell: pwsh

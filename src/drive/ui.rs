@@ -1,6 +1,6 @@
-use super::{Controller, Phase, replica::Resolution};
+use super::{Controller, Phase, oauth, replica::Resolution};
 use crate::storage::Store;
-use eframe::egui::{self, Color32, RichText};
+use egui::{self, Color32, RichText};
 use std::sync::{Arc, Mutex};
 
 #[derive(Default)]
@@ -16,6 +16,7 @@ impl Panel {
         let status = drive.status();
         let signing_in = status.phase == Phase::Authorizing;
         let syncing = status.phase == Phase::Syncing;
+        let bundled = oauth::Client::bundled().ok().flatten();
         egui::ScrollArea::vertical().id_salt("drive-panel").show(ui, |ui| {
             frame(ui, "Connection", |ui| {
                 if settings.connected() { ui.label(RichText::new(&settings.account_label).strong()); }
@@ -24,7 +25,7 @@ impl Panel {
                 if status.pending { ui.label("Local changes are waiting to be uploaded."); }
                 if syncing { ui.spinner(); }
                 ui.horizontal_wrapped(|ui| {
-                    if ui.add_enabled(!signing_in && !syncing && !settings.client_id.is_empty(), egui::Button::new(if settings.connected() { "Reconnect / change account" } else { "Connect Google Drive" })).clicked() { drive.connect(); }
+                    if ui.add_enabled(!signing_in && !syncing && settings.can_connect(), egui::Button::new(if settings.connected() { "Reconnect / change account" } else { "Connect Google Drive" })).clicked() { drive.connect(); }
                     if ui.add_enabled(settings.connected() && !signing_in && !syncing && !settings.needs_sign_in, egui::Button::new("Sync now")).clicked() { drive.sync_now(); }
                     if ui.add_enabled(settings.connected() && !signing_in, egui::Button::new("Disconnect this computer")).clicked() { drive.disconnect(); }
                 });
@@ -34,6 +35,13 @@ impl Panel {
                         if ui.button("Cancel sign-in").clicked() { drive.cancel_sign_in(); }
                     });
                 }
+                if !settings.connected() && !signing_in {
+                    if settings.can_connect() {
+                        ui.label("Choose your Google account in the browser and allow subscription sync. No setup files are needed.");
+                    } else {
+                        ui.colored_label(Color32::LIGHT_YELLOW, "Google sign-in is not configured in this build. A release with the app's Google connection is required.");
+                    }
+                }
                 let mut automatic = settings.auto_sync;
                 if ui.add_enabled(!signing_in, egui::Checkbox::new(&mut automatic, "Synchronize automatically")).changed() {
                     let mut store = shared.lock().unwrap(); let previous = store.settings.drive.auto_sync; store.settings.drive.auto_sync = automatic;
@@ -42,12 +50,15 @@ impl Panel {
                 }
                 ui.label(RichText::new("Automatic sync runs after local changes and checks other computers every 60 seconds. Manual Sync now remains available when automatic sync is off.").small());
             });
-            if settings.client_id.is_empty() || !settings.connected() {
-                frame(ui, "One-time Google setup", |ui| {
-                    ui.label("Import a Desktop app OAuth client JSON downloaded from Google Cloud Console. Use the same client on your other computers.");
-                    ui.label(RichText::new("Create a Google Cloud project, enable Google Drive API, configure the consent screen, and create an OAuth client of type Desktop app. If the app is in Testing, add your Google account as a test user.").small());
-                    ui.hyperlink_to("Open Google Cloud Console", "https://console.cloud.google.com/apis/credentials");
+            ui.collapsing("Advanced: custom Google connection", |ui| {
+                frame(ui, "OAuth client override", |ui| {
+                    ui.label("For developers and self-hosted builds. A custom client uses its own app-data space; use the same client on all your computers.");
+                    ui.hyperlink_to("Custom client setup guide", "https://github.com/siarheisinelnikau/subscriptions-reminder/blob/main/docs/google-drive-setup.md");
                     if !settings.client_id.is_empty() { ui.label(RichText::new(format!("Client: {}", settings.client_id)).small().monospace()); }
+                    if bundled.as_ref().is_some_and(|client| !settings.client_id.is_empty() && settings.client_id != client.id)
+                        && ui.add_enabled(!settings.connected() && !signing_in && !syncing, egui::Button::new("Use built-in Google connection")).clicked() {
+                            self.notice = drive.use_bundled_client().err().unwrap_or_else(|| "Built-in connection selected. Connect Google Drive to sign in.".into());
+                        }
                     if ui.add_enabled(!settings.connected() && !signing_in && !syncing, egui::Button::new("Import Google OAuth JSON...")).clicked()
                         && let Some(path) = rfd::FileDialog::new().add_filter("Google OAuth client", &["json"]).pick_file() {
                             let result = (|| -> Result<(), String> {
@@ -57,7 +68,7 @@ impl Panel {
                             self.notice = result.err().unwrap_or_else(|| "OAuth configuration submitted. Connect when the import finishes.".into());
                         }
                 });
-            }
+            });
             if !self.notice.is_empty() { ui.colored_label(Color32::LIGHT_YELLOW, &self.notice); }
             frame(ui, "What is synchronized", |ui| {
                 ui.label("Subscription names, expiry dates, prices, notes, reminder lead times, and paused status.");

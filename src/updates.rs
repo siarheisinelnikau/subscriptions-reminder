@@ -69,7 +69,7 @@ fn trusted_url(url: &str) -> bool {
     ))
 }
 
-pub fn check(state: Shared, ctx: eframe::egui::Context) {
+pub fn check(state: Shared, ctx: egui::Context) {
     {
         let mut value = state.lock().unwrap();
         if matches!(*value, State::Checking | State::Downloading(_)) {
@@ -120,7 +120,7 @@ pub fn check(state: Shared, ctx: eframe::egui::Context) {
 pub fn install(
     release: Release,
     state: Shared,
-    ctx: eframe::egui::Context,
+    ctx: egui::Context,
     platform: Arc<Platform>,
     config_dir: PathBuf,
 ) {
@@ -146,7 +146,7 @@ pub fn install(
 fn download_and_prepare(
     release: &Release,
     state: &Shared,
-    ctx: &eframe::egui::Context,
+    ctx: &egui::Context,
     config_dir: &Path,
 ) -> Result<(), String> {
     let asset = compatible_asset(release)?;

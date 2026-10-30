@@ -115,12 +115,13 @@ impl Store {
     pub fn save_settings(&self) -> Result<(), String> {
         atomic_json(&self.config_dir.join("settings.json"), &self.settings)
     }
-    pub fn refresh(&mut self) -> Result<(), String> {
+    /// Reload external changes and report whether the in-memory database changed.
+    pub fn refresh(&mut self) -> Result<bool, String> {
         let path = self.data_path();
         let bytes = match fs::read(&path) {
             Ok(b) => b,
             Err(e) if e.kind() == std::io::ErrorKind::NotFound && self.fingerprint.is_none() => {
-                return Ok(());
+                return Ok(false);
             }
             Err(e) => {
                 return Err(format!(
@@ -135,8 +136,9 @@ impl Store {
             db.validate()?;
             self.db = db;
             self.fingerprint = Some(bytes);
+            return Ok(true);
         }
-        Ok(())
+        Ok(false)
     }
     pub fn commit(&mut self, db: Database) -> Result<(), String> {
         // Refuse a stale write if another application or sync client changed the file.
@@ -201,10 +203,17 @@ mod tests {
         store.commit(db.clone()).unwrap();
         assert!(store.data_path().with_extension("json.bak").exists());
         let mut other = Store::open(dir.path().to_owned()).unwrap();
+        assert!(!store.refresh().unwrap());
         db.subscriptions[0].name = "External".into();
         other.commit(db).unwrap();
         assert!(store.commit(store.db.clone()).is_err());
         assert_eq!(store.db.subscriptions[0].name, "External");
+        assert!(!store.refresh().unwrap());
+        let mut changed = other.db.clone();
+        changed.subscriptions[0].name = "External again".into();
+        other.commit(changed).unwrap();
+        assert!(store.refresh().unwrap());
+        assert!(!store.refresh().unwrap());
         fs::write(store.data_path(), b"broken").unwrap();
         assert!(store.refresh().is_err());
         assert!(store.commit(store.db.clone()).is_err());
