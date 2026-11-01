@@ -1,3 +1,4 @@
+use crate::i18n::tr;
 use crate::theme::Palette;
 use crate::{ai, model::Cycle, platform, storage::Store};
 use egui::{self, RichText};
@@ -61,7 +62,7 @@ impl Importer {
     }
     pub fn load_file(&mut self, path: &Path, ctx: &egui::Context) -> bool {
         if self.busy() {
-            self.notice = "Wait for the current recognition request to finish.".into();
+            self.notice = tr("Wait for the current recognition request to finish.").into();
             return false;
         }
         let image = ai::Attachment::file(path);
@@ -102,17 +103,17 @@ impl Importer {
             return;
         }
         let Some(image) = self.attachment.clone() else {
-            self.notice = "Choose or paste an image first.".into();
+            self.notice = tr("Choose or paste an image first.").into();
             return;
         };
         let settings = shared.lock().unwrap().settings.ai.clone();
         if !settings.enabled {
             self.notice =
-                "Enable AI image import in Settings and save the connection first.".into();
+                tr("Enable AI image import in Settings and save the connection first.").into();
             return;
         }
         if settings.active().model.trim().is_empty() {
-            self.notice = "Choose a vision model in Settings and save it first.".into();
+            self.notice = tr("Choose a vision model in Settings and save it first.").into();
             return;
         }
         self.source = format!(
@@ -141,7 +142,7 @@ impl Importer {
             match std::mem::replace(&mut *task, Task::Idle) {
                 Task::Done(value) => {
                     if value.candidates.is_empty() {
-                        self.notice = "No subscriptions were found in this image.".into();
+                        self.notice = tr("No subscriptions were found in this image.").into();
                     }
                     self.review = Some(value);
                 }
@@ -151,7 +152,7 @@ impl Importer {
         }
     }
     pub fn settings(&mut self, ui: &mut egui::Ui, draft: &mut ai::Settings, ctx: &egui::Context) {
-        ui.checkbox(&mut draft.enabled, "Enable AI image import");
+        ui.checkbox(&mut draft.enabled, tr("Enable AI image import"));
         egui::ComboBox::from_id_salt("ai-provider")
             .selected_text(draft.provider.label())
             .show_ui(ui, |ui| {
@@ -162,28 +163,28 @@ impl Importer {
         let provider = draft.provider;
         let index = provider.index();
         let connection = draft.connection_mut(provider);
-        ui.label("Base URL");
+        ui.label(tr("Base URL"));
         if ui
             .add(egui::TextEdit::singleline(&mut connection.base_url).desired_width(530.))
             .changed()
         {
             if !self.keys[index].is_empty() {
-                self.notice = "The API key was cleared because the endpoint changed. Enter the key for the new endpoint.".into();
+                self.notice = tr("The API key was cleared because the endpoint changed. Enter the key for the new endpoint.").into();
             }
             self.keys[index].clear();
             connection.api_key_protected.clear();
         }
-        ui.label("API key (optional for servers without authentication)");
+        ui.label(tr("API key (optional for servers without authentication)"));
         ui.add(
             egui::TextEdit::singleline(&mut self.keys[index])
                 .password(true)
                 .desired_width(530.),
         );
         ui.horizontal(|ui| {
-            ui.label("Vision model ID");
+            ui.label(tr("Vision model ID"));
             let pending = matches!(*self.models.lock().unwrap(), Models::Working(_));
             if ui
-                .add_enabled(!pending, egui::Button::new("Load models"))
+                .add_enabled(!pending, egui::Button::new(tr("Load models")))
                 .clicked()
             {
                 match platform::protect(self.keys[index].trim()) {
@@ -211,20 +212,20 @@ impl Importer {
                 .hint_text(if provider == ai::Provider::AiHub {
                     "universal"
                 } else {
-                    "Enter a vision-capable model ID"
+                    tr("Enter a vision-capable model ID")
                 })
                 .desired_width(530.),
         );
         match &*self.models.lock().unwrap() {
             Models::Working(url) if *url == connection.base_url => {
-                ui.label("Loading models...");
+                ui.label(tr("Loading models..."));
             }
             Models::Error(url, error) if *url == connection.base_url => {
                 ui.colored_label(Palette::for_ui(ui).danger, error);
             }
             Models::Done(url, models) if *url == connection.base_url => {
                 egui::ComboBox::from_id_salt("available-ai-models")
-                    .selected_text("Select from available models...")
+                    .selected_text(tr("Select from available models..."))
                     .height(220.)
                     .show_ui(ui, |ui| {
                         for model in models {
@@ -236,21 +237,21 @@ impl Importer {
         }
         if provider == ai::Provider::AiHub {
             ui.label(
-                RichText::new(
+                RichText::new(tr(
                     "Universal follows the active AI-Hub model. Select a model with image input.",
-                )
+                ))
                 .small(),
             );
         }
         if provider == ai::Provider::OpenRouter {
-            ui.label(RichText::new("Use an OpenRouter API key and a model with image input. Provider usage may be billed to your account.").small());
+            ui.label(RichText::new(tr("Use an OpenRouter API key and a model with image input. Provider usage may be billed to your account.")).small());
         }
-        ui.collapsing("Privacy & connection details", |ui| {
-            ui.label("Each provider has its own encrypted API key. Changing the URL clears its key. Images are sent only when you request recognition.");
-            ui.label("Save settings before recognizing an image. OpenAI-compatible endpoints use Chat Completions with image input.");
+        ui.collapsing(tr("Privacy & connection details"), |ui| {
+            ui.label(tr("Each provider has its own encrypted API key. Changing the URL clears its key. Images are sent only when you request recognition."));
+            ui.label(tr("Save settings before recognizing an image. OpenAI-compatible endpoints use Chat Completions with image input."));
         });
         if !self.notice.is_empty() {
-            ui.colored_label(Palette::for_ui(ui).warning, &self.notice);
+            ui.colored_label(Palette::for_ui(ui).warning, tr(&self.notice));
         }
     }
     pub fn encrypt_keys(&self, settings: &mut ai::Settings) -> Result<(), String> {
@@ -258,7 +259,7 @@ impl Importer {
             let config = settings.connection_mut(provider);
             config.base_url = ai::normalize_url(&config.base_url)?;
             if self.keys[provider.index()].contains(['\r', '\n']) {
-                return Err("An API key cannot contain a line break.".into());
+                return Err(tr("An API key cannot contain a line break.").into());
             }
             config.api_key_protected = platform::protect(self.keys[provider.index()].trim())?;
             config.model = config.model.trim().into();
@@ -278,12 +279,12 @@ impl Importer {
         ui.horizontal(|ui| {
             if ui
                 .button("←")
-                .on_hover_text("Back to subscriptions")
+                .on_hover_text(tr("Back to subscriptions"))
                 .clicked()
             {
                 navigation = Navigation::Subscriptions;
             }
-            ui.heading("Image import");
+            ui.heading(tr("Image import"));
             if self
                 .review
                 .as_ref()
@@ -291,7 +292,7 @@ impl Importer {
             {
                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                     if ui
-                        .add(colors.primary_button("Save selected subscriptions"))
+                        .add(colors.primary_button(tr("Save selected subscriptions")))
                         .clicked()
                     {
                         save_requested = true;
@@ -305,7 +306,7 @@ impl Importer {
                 "{} · {}",
                 active.provider.label(),
                 if active.active().model.is_empty() {
-                    "Choose a vision model"
+                    tr("Choose a vision model")
                 } else {
                     &active.active().model
                 }
@@ -317,17 +318,17 @@ impl Importer {
         let busy = self.busy();
         ui.horizontal(|ui| {
             if ui
-                .add_enabled(!busy, egui::Button::new("Attach and recognize"))
+                .add_enabled(!busy, egui::Button::new(tr("Attach and recognize")))
                 .clicked()
                 && let Some(path) = rfd::FileDialog::new()
-                    .add_filter("Images", &["png", "jpg", "jpeg", "webp"])
+                    .add_filter(tr("Images"), &["png", "jpg", "jpeg", "webp"])
                     .pick_file()
                 && self.load_file(&path, ctx)
             {
                 self.recognize(store, ctx);
             }
             if ui
-                .add_enabled(!busy, egui::Button::new("Paste image"))
+                .add_enabled(!busy, egui::Button::new(tr("Paste image")))
                 .clicked()
             {
                 self.paste(store, ctx);
@@ -335,48 +336,48 @@ impl Importer {
             if ui
                 .add_enabled(
                     !busy && self.attachment.is_some(),
-                    egui::Button::new("Recognize again"),
+                    egui::Button::new(tr("Recognize again")),
                 )
                 .clicked()
             {
                 self.recognize(store, ctx);
             }
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                if ui.button("Connection settings").clicked() {
+                if ui.button(tr("Connection settings")).clicked() {
                     navigation = Navigation::Settings;
                 }
             });
         });
         ui.label(
-            RichText::new(
+            RichText::new(tr(
                 "PNG, JPEG, WebP · drop an image or press Ctrl+V · sent to your selected provider",
-            )
+            ))
             .small()
             .color(colors.muted),
         );
         if busy {
             ui.horizontal(|ui| {
                 ui.spinner();
-                ui.label("Reading the image...");
+                ui.label(tr("Reading the image..."));
             });
         }
         if !self.notice.is_empty() {
-            ui.colored_label(colors.warning, &self.notice);
+            ui.colored_label(colors.warning, tr(&self.notice));
         }
         ui.add_space(8.0);
         egui::ScrollArea::vertical().id_salt("image-review").auto_shrink([false, false]).show(ui, |ui| {
             if let (Some(image), Some(texture)) = (&self.attachment, &self.texture) {
-                ui.collapsing(format!("Source image · {} · {} × {}", image.name, image.width, image.height), |ui| {
+                ui.collapsing(crate::trf!("Source image · {} · {} × {}", image.name, image.width, image.height), |ui| {
                     let scale = (ui.available_width().min(360.0) / image.width as f32).min(120.0 / image.height as f32).min(1.0);
                     ui.image((texture.id(), egui::vec2(image.width as f32 * scale, image.height as f32 * scale)));
                 });
             }
             if let Some(review) = &mut self.review {
                 ui.add_space(8.0);
-                ui.label(RichText::new(format!("Review {} detected subscriptions", review.candidates.len())).size(14.0).strong());
-                ui.label(RichText::new("Correct uncertain fields, then save the selected records.").small().color(colors.muted));
+                ui.label(RichText::new(crate::trf!("Review {} detected subscriptions", review.candidates.len())).size(14.0).strong());
+                ui.label(RichText::new(tr("Correct uncertain fields, then save the selected records.")).small().color(colors.muted));
                 if !review.warnings.is_empty() {
-                    ui.collapsing(format!("Model notes ({})", review.warnings.len()), |ui| {
+                    ui.collapsing(crate::trf!("Model notes ({})", review.warnings.len()), |ui| {
                         for warning in &review.warnings { ui.colored_label(colors.warning, warning); }
                     });
                 }
@@ -386,25 +387,25 @@ impl Importer {
                         egui::Frame::new().fill(colors.card).stroke(egui::Stroke::new(1.0, colors.card_border)).inner_margin(10).corner_radius(6).show(ui, |ui| {
                             ui.set_min_width(ui.available_width());
                             ui.horizontal(|ui| {
-                                ui.checkbox(&mut item.selected, "").on_hover_text("Include this subscription");
+                                ui.checkbox(&mut item.selected, "").on_hover_text(tr("Include this subscription"));
                                 let name_width = (ui.available_width() - 320.0).max(160.0);
-                                ui.add(egui::TextEdit::singleline(&mut item.sub.name).hint_text("Subscription name").desired_width(name_width));
-                                ui.label("Expires");
+                                ui.add(egui::TextEdit::singleline(&mut item.sub.name).hint_text(tr("Subscription name")).desired_width(name_width));
+                                ui.label(tr("Expires"));
                                 ui.add(egui::TextEdit::singleline(&mut item.date).hint_text("YYYY-MM-DD").desired_width(115.0));
                                 egui::ComboBox::from_id_salt("import-cycle").width(102.0).selected_text(item.sub.cycle.label()).show_ui(ui, |ui| {
                                     for cycle in Cycle::ALL { ui.selectable_value(&mut item.sub.cycle, cycle, cycle.label()); }
                                 });
                             });
                             ui.horizontal(|ui| {
-                                ui.label("Price");
+                                ui.label(tr("Price"));
                                 ui.add(egui::TextEdit::singleline(&mut item.sub.amount).desired_width(78.0));
-                                ui.add(egui::TextEdit::singleline(&mut item.sub.currency).hint_text("Currency").desired_width(60.0));
+                                ui.add(egui::TextEdit::singleline(&mut item.sub.currency).hint_text(tr("Currency")).desired_width(60.0));
                                 ui.add_space(10.0);
-                                ui.label("Remind");
+                                ui.label(tr("Remind"));
                                 ui.add(egui::DragValue::new(&mut item.sub.reminder_days).range(0..=365));
-                                ui.label("days before expiry");
+                                ui.label(tr("days before expiry"));
                             });
-                            ui.collapsing("Notes", |ui| {
+                            ui.collapsing(tr("Notes"), |ui| {
                                 ui.add(egui::TextEdit::multiline(&mut item.sub.notes).desired_rows(2).desired_width(f32::INFINITY));
                             });
                         });
@@ -413,8 +414,8 @@ impl Importer {
             } else if self.attachment.is_none() {
                 egui::Frame::new().fill(colors.card).stroke(egui::Stroke::new(1.0, colors.card_border)).inner_margin(24).corner_radius(7).show(ui, |ui| {
                     ui.set_min_width(ui.available_width());
-                    ui.label(RichText::new("Drop a screenshot here").size(15.0).strong());
-                    ui.label(RichText::new("You can also attach a file or paste an image from the clipboard.").color(colors.muted));
+                    ui.label(RichText::new(tr("Drop a screenshot here")).size(15.0).strong());
+                    ui.label(RichText::new(tr("You can also attach a file or paste an image from the clipboard.")).color(colors.muted));
                 });
             }
         });
@@ -422,8 +423,10 @@ impl Importer {
             let result = ai::save_candidates(&mut store.lock().unwrap(), &review.candidates);
             match result {
                 Ok((added, skipped)) => {
-                    self.notice = format!(
-                        "Saved {added} subscription(s). Skipped {skipped} exact duplicate(s)."
+                    self.notice = crate::trf!(
+                        "Saved {} subscription(s). Skipped {} exact duplicate(s).",
+                        added,
+                        skipped
                     );
                     self.review = None;
                 }

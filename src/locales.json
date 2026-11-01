@@ -1,0 +1,1654 @@
+{
+  "Subscriptions": [
+    "Подписки",
+    "Abonnements",
+    "Abonnements",
+    "Suscripciones",
+    "Abbonamenti"
+  ],
+  "Settings": [
+    "Настройки",
+    "Paramètres",
+    "Einstellungen",
+    "Ajustes",
+    "Impostazioni"
+  ],
+  "Language": [
+    "Язык",
+    "Langue",
+    "Sprache",
+    "Idioma",
+    "Lingua"
+  ],
+  "+ Add subscription": [
+    "+ Добавить подписку",
+    "+ Ajouter un abonnement",
+    "+ Abonnement hinzufügen",
+    "+ Añadir suscripción",
+    "+ Aggiungi abbonamento"
+  ],
+  "Import image": [
+    "Импорт изображения",
+    "Importer une image",
+    "Bild importieren",
+    "Importar imagen",
+    "Importa immagine"
+  ],
+  "active": [
+    "активных",
+    "actifs",
+    "aktiv",
+    "activas",
+    "attivi"
+  ],
+  "due within 7 days": [
+    "истекают за 7 дней",
+    "échéance sous 7 jours",
+    "in 7 Tagen fällig",
+    "vencen en 7 días",
+    "in scadenza entro 7 giorni"
+  ],
+  "overdue": [
+    "просрочено",
+    "en retard",
+    "überfällig",
+    "vencidas",
+    "scaduti"
+  ],
+  "All": [
+    "Все",
+    "Tous",
+    "Alle",
+    "Todas",
+    "Tutti"
+  ],
+  "Needs attention": [
+    "Требуют внимания",
+    "À surveiller",
+    "Handlungsbedarf",
+    "Requieren atención",
+    "Da controllare"
+  ],
+  "Paused": [
+    "Приостановлены",
+    "En pause",
+    "Pausiert",
+    "Pausadas",
+    "In pausa"
+  ],
+  "Search name or notes": [
+    "Поиск по названию и заметкам",
+    "Rechercher un nom ou une note",
+    "Name oder Notizen suchen",
+    "Buscar nombre o notas",
+    "Cerca nome o note"
+  ],
+  "SUBSCRIPTION": [
+    "ПОДПИСКА",
+    "ABONNEMENT",
+    "ABONNEMENT",
+    "SUSCRIPCIÓN",
+    "ABBONAMENTO"
+  ],
+  "PRICE / PERIOD": [
+    "ЦЕНА / ПЕРИОД",
+    "PRIX / PÉRIODE",
+    "PREIS / ZEITRAUM",
+    "PRECIO / PERÍODO",
+    "PREZZO / PERIODO"
+  ],
+  "EXPIRES": [
+    "ИСТЕКАЕТ",
+    "ÉCHÉANCE",
+    "ABLAUF",
+    "VENCE",
+    "SCADENZA"
+  ],
+  "STATUS": [
+    "СТАТУС",
+    "ÉTAT",
+    "STATUS",
+    "ESTADO",
+    "STATO"
+  ],
+  "No subscriptions yet": [
+    "Пока нет подписок",
+    "Aucun abonnement",
+    "Noch keine Abonnements",
+    "Aún no hay suscripciones",
+    "Nessun abbonamento"
+  ],
+  "No matching subscriptions": [
+    "Подписки не найдены",
+    "Aucun abonnement correspondant",
+    "Keine passenden Abonnements",
+    "No hay suscripciones coincidentes",
+    "Nessun abbonamento corrispondente"
+  ],
+  "Add a subscription or import a screenshot to get started.": [
+    "Добавьте подписку или импортируйте скриншот.",
+    "Ajoutez un abonnement ou importez une capture pour commencer.",
+    "Fügen Sie ein Abonnement hinzu oder importieren Sie einen Screenshot.",
+    "Añade una suscripción o importa una captura para empezar.",
+    "Aggiungi un abbonamento o importa una schermata per iniziare."
+  ],
+  "Try another search or filter.": [
+    "Измените поиск или фильтр.",
+    "Essayez une autre recherche ou un autre filtre.",
+    "Versuchen Sie eine andere Suche oder einen anderen Filter.",
+    "Prueba otra búsqueda o filtro.",
+    "Prova un'altra ricerca o un altro filtro."
+  ],
+  "{} of {} subscriptions · ordered by expiry": [
+    "{} из {} подписок · по дате истечения",
+    "{} sur {} abonnements · par échéance",
+    "{} von {} Abonnements · nach Ablaufdatum",
+    "{} de {} suscripciones · por vencimiento",
+    "{} di {} abbonamenti · per scadenza"
+  ],
+  "Sync conflict · open Settings": [
+    "Конфликт синхронизации · откройте настройки",
+    "Conflit de synchronisation · ouvrez les paramètres",
+    "Synchronisierungskonflikt · Einstellungen öffnen",
+    "Conflicto de sincronización · abre Ajustes",
+    "Conflitto di sincronizzazione · apri Impostazioni"
+  ],
+  "Drive connected": [
+    "Drive подключён",
+    "Drive connecté",
+    "Drive verbunden",
+    "Drive conectado",
+    "Drive connesso"
+  ],
+  "Synchronizing": [
+    "Синхронизация",
+    "Synchronisation",
+    "Synchronisierung",
+    "Sincronizando",
+    "Sincronizzazione"
+  ],
+  "Drive offline": [
+    "Drive недоступен",
+    "Drive hors ligne",
+    "Drive offline",
+    "Drive sin conexión",
+    "Drive non in linea"
+  ],
+  "Drive needs sign-in": [
+    "Войдите в Drive",
+    "Connexion à Drive requise",
+    "Anmeldung bei Drive nötig",
+    "Inicia sesión en Drive",
+    "Accedi a Drive"
+  ],
+  "Settings → Google Drive": [
+    "Настройки → Google Drive",
+    "Paramètres → Google Drive",
+    "Einstellungen → Google Drive",
+    "Ajustes → Google Drive",
+    "Impostazioni → Google Drive"
+  ],
+  "Remind {}d before": [
+    "Напомнить за {} дн.",
+    "Rappel {} j avant",
+    "{} T. vorher erinnern",
+    "Recordar {} d antes",
+    "Ricorda {} g prima"
+  ],
+  "{}d overdue": [
+    "Просрочено на {} дн.",
+    "{} j de retard",
+    "{} T. überfällig",
+    "{} d de retraso",
+    "Scaduto da {} g"
+  ],
+  "Due today": [
+    "Истекает сегодня",
+    "Échéance aujourd'hui",
+    "Heute fällig",
+    "Vence hoy",
+    "Scade oggi"
+  ],
+  "Due in {}d": [
+    "Истекает через {} дн.",
+    "Échéance dans {} j",
+    "In {} T. fällig",
+    "Vence en {} d",
+    "Scade tra {} g"
+  ],
+  "In {} days": [
+    "Через {} дн.",
+    "Dans {} jours",
+    "In {} Tagen",
+    "En {} días",
+    "Tra {} giorni"
+  ],
+  "Renew": [
+    "Продлить",
+    "Renouveler",
+    "Verlängern",
+    "Renovar",
+    "Rinnova"
+  ],
+  "Edit": [
+    "Изменить",
+    "Modifier",
+    "Bearbeiten",
+    "Editar",
+    "Modifica"
+  ],
+  "Advance the expiry by one billing period.": [
+    "Продлить на один расчётный период.",
+    "Repousser l'échéance d'une période de facturation.",
+    "Das Ablaufdatum um einen Abrechnungszeitraum verschieben.",
+    "Avanzar el vencimiento un período de facturación.",
+    "Sposta la scadenza di un periodo di fatturazione."
+  ],
+  "Pause reminders": [
+    "Приостановить напоминания",
+    "Suspendre les rappels",
+    "Erinnerungen pausieren",
+    "Pausar recordatorios",
+    "Sospendi promemoria"
+  ],
+  "Resume reminders": [
+    "Возобновить напоминания",
+    "Reprendre les rappels",
+    "Erinnerungen fortsetzen",
+    "Reanudar recordatorios",
+    "Riprendi promemoria"
+  ],
+  "Delete subscription": [
+    "Удалить подписку",
+    "Supprimer l'abonnement",
+    "Abonnement löschen",
+    "Eliminar suscripción",
+    "Elimina abbonamento"
+  ],
+  "Back to subscriptions": [
+    "Назад к подпискам",
+    "Retour aux abonnements",
+    "Zurück zu Abonnements",
+    "Volver a suscripciones",
+    "Torna agli abbonamenti"
+  ],
+  "Save settings": [
+    "Сохранить настройки",
+    "Enregistrer les paramètres",
+    "Einstellungen speichern",
+    "Guardar ajustes",
+    "Salva impostazioni"
+  ],
+  "General": [
+    "Общие",
+    "Général",
+    "Allgemein",
+    "General",
+    "Generali"
+  ],
+  "AI provider": [
+    "ИИ-провайдер",
+    "Fournisseur d'IA",
+    "KI-Anbieter",
+    "Proveedor de IA",
+    "Fornitore IA"
+  ],
+  "Notifications": [
+    "Уведомления",
+    "Notifications",
+    "Benachrichtigungen",
+    "Notificaciones",
+    "Notifiche"
+  ],
+  "Storage & updates": [
+    "Данные и обновления",
+    "Stockage et mises à jour",
+    "Speicher und Updates",
+    "Almacenamiento y actualizaciones",
+    "Archivio e aggiornamenti"
+  ],
+  "Appearance": [
+    "Внешний вид",
+    "Apparence",
+    "Darstellung",
+    "Apariencia",
+    "Aspetto"
+  ],
+  "Theme": [
+    "Тема",
+    "Thème",
+    "Design",
+    "Tema",
+    "Tema"
+  ],
+  "System": [
+    "Системная",
+    "Système",
+    "System",
+    "Sistema",
+    "Sistema"
+  ],
+  "Dark": [
+    "Тёмная",
+    "Sombre",
+    "Dunkel",
+    "Oscuro",
+    "Scuro"
+  ],
+  "Light": [
+    "Светлая",
+    "Clair",
+    "Hell",
+    "Claro",
+    "Chiaro"
+  ],
+  "Subscription size": [
+    "Размер строк",
+    "Taille des abonnements",
+    "Abonnementgröße",
+    "Tamaño de suscripciones",
+    "Dimensione abbonamenti"
+  ],
+  "Compact": [
+    "Компактный",
+    "Compact",
+    "Kompakt",
+    "Compacto",
+    "Compatto"
+  ],
+  "Standard": [
+    "Обычный",
+    "Standard",
+    "Standard",
+    "Estándar",
+    "Standard"
+  ],
+  "Large": [
+    "Крупный",
+    "Grand",
+    "Groß",
+    "Grande",
+    "Grande"
+  ],
+  "Size controls row spacing. These appearance choices are saved immediately.": [
+    "Размер задаёт высоту строк. Язык и оформление сохраняются сразу.",
+    "La taille règle l'espacement des lignes. La langue et l'apparence sont enregistrées immédiatement.",
+    "Die Größe steuert den Zeilenabstand. Sprache und Darstellung werden sofort gespeichert.",
+    "El tamaño ajusta el espacio entre filas. El idioma y la apariencia se guardan al instante.",
+    "La dimensione regola la spaziatura delle righe. Lingua e aspetto vengono salvati subito."
+  ],
+  "Startup": [
+    "Запуск",
+    "Démarrage",
+    "Start",
+    "Inicio",
+    "Avvio"
+  ],
+  "Start with Windows": [
+    "Запускать с Windows",
+    "Démarrer avec Windows",
+    "Mit Windows starten",
+    "Iniciar con Windows",
+    "Avvia con Windows"
+  ],
+  "Starts in the system tray with reminders running.": [
+    "Запускается в трее с работающими напоминаниями.",
+    "Démarre dans la zone de notification avec les rappels actifs.",
+    "Startet im Infobereich mit aktiven Erinnerungen.",
+    "Se inicia en la bandeja con los recordatorios activos.",
+    "Si avvia nell'area di notifica con i promemoria attivi."
+  ],
+  "Check for updates on startup": [
+    "Проверять обновления при запуске",
+    "Rechercher les mises à jour au démarrage",
+    "Beim Start nach Updates suchen",
+    "Buscar actualizaciones al iniciar",
+    "Cerca aggiornamenti all'avvio"
+  ],
+  "Checks in the background. Downloads and installation require your action.": [
+    "Проверка идёт в фоне. Загрузка и установка запускаются вами.",
+    "Vérification en arrière-plan. Vous lancez le téléchargement et l'installation.",
+    "Die Prüfung läuft im Hintergrund. Download und Installation erfordern Ihre Aktion.",
+    "Se comprueba en segundo plano. Tú inicias la descarga e instalación.",
+    "Il controllo avviene in background. Download e installazione richiedono una tua azione."
+  ],
+  "Quit application": [
+    "Выйти из приложения",
+    "Quitter l'application",
+    "Anwendung beenden",
+    "Salir de la aplicación",
+    "Esci dall'applicazione"
+  ],
+  "AI connection": [
+    "Подключение ИИ",
+    "Connexion IA",
+    "KI-Verbindung",
+    "Conexión de IA",
+    "Connessione IA"
+  ],
+  "Windows reminders": [
+    "Напоминания Windows",
+    "Rappels Windows",
+    "Windows-Erinnerungen",
+    "Recordatorios de Windows",
+    "Promemoria Windows"
+  ],
+  "Windows notifications": [
+    "Уведомления Windows",
+    "Notifications Windows",
+    "Windows-Benachrichtigungen",
+    "Notificaciones de Windows",
+    "Notifiche Windows"
+  ],
+  "Send test": [
+    "Проверить",
+    "Envoyer un test",
+    "Test senden",
+    "Enviar prueba",
+    "Invia prova"
+  ],
+  "Your Windows reminders are ready.": [
+    "Напоминания Windows готовы.",
+    "Vos rappels Windows sont prêts.",
+    "Ihre Windows-Erinnerungen sind bereit.",
+    "Tus recordatorios de Windows están listos.",
+    "I promemoria Windows sono pronti."
+  ],
+  "Test notification submitted to Windows.": [
+    "Тестовое уведомление отправлено в Windows.",
+    "Notification de test transmise à Windows.",
+    "Testbenachrichtigung an Windows gesendet.",
+    "Notificación de prueba enviada a Windows.",
+    "Notifica di prova inviata a Windows."
+  ],
+  "Checked every 30 seconds. Reminders repeat daily until renewed or paused.": [
+    "Проверка каждые 30 секунд. Напоминания повторяются ежедневно до продления или паузы.",
+    "Vérification toutes les 30 secondes. Les rappels se répètent chaque jour jusqu'au renouvellement ou à la suspension.",
+    "Prüfung alle 30 Sekunden. Erinnerungen werden bis zur Verlängerung oder Pause täglich wiederholt.",
+    "Se comprueba cada 30 segundos. Los recordatorios se repiten a diario hasta renovar o pausar.",
+    "Controllo ogni 30 secondi. I promemoria si ripetono ogni giorno fino al rinnovo o alla sospensione."
+  ],
+  "Also send reminders to Telegram": [
+    "Также отправлять в Telegram",
+    "Envoyer aussi les rappels sur Telegram",
+    "Erinnerungen auch an Telegram senden",
+    "Enviar también recordatorios a Telegram",
+    "Invia promemoria anche a Telegram"
+  ],
+  "Bot token": [
+    "Токен бота",
+    "Jeton du bot",
+    "Bot-Token",
+    "Token del bot",
+    "Token del bot"
+  ],
+  "Chat ID": [
+    "ID чата",
+    "ID du chat",
+    "Chat-ID",
+    "ID del chat",
+    "ID della chat"
+  ],
+  "Setup help": [
+    "Помощь с настройкой",
+    "Aide à la configuration",
+    "Einrichtungshilfe",
+    "Ayuda de configuración",
+    "Guida alla configurazione"
+  ],
+  "Create a bot with @BotFather, send /start in its chat, and enter the bot token and your chat ID. Save settings before testing.": [
+    "Создайте бота через @BotFather, отправьте /start в его чат и укажите токен и ID чата. Сохраните настройки перед проверкой.",
+    "Créez un bot avec @BotFather, envoyez /start dans son chat et saisissez son jeton et votre ID de chat. Enregistrez avant de tester.",
+    "Erstellen Sie mit @BotFather einen Bot, senden Sie /start im Chat und geben Sie Bot-Token und Chat-ID ein. Vor dem Test speichern.",
+    "Crea un bot con @BotFather, envía /start en su chat e introduce el token y tu ID de chat. Guarda antes de probar.",
+    "Crea un bot con @BotFather, invia /start nella chat e inserisci token e ID della chat. Salva prima della prova."
+  ],
+  "Credentials stay encrypted on this computer. Reminders send subscription names and dates to Telegram.": [
+    "Учётные данные хранятся зашифрованными на этом компьютере. В Telegram отправляются названия и даты подписок.",
+    "Les identifiants restent chiffrés sur cet ordinateur. Les rappels envoient les noms et dates à Telegram.",
+    "Zugangsdaten bleiben auf diesem Computer verschlüsselt. Erinnerungen senden Namen und Termine an Telegram.",
+    "Las credenciales permanecen cifradas en este equipo. Los recordatorios envían nombres y fechas a Telegram.",
+    "Le credenziali restano cifrate su questo computer. I promemoria inviano nomi e date a Telegram."
+  ],
+  "Test saved Telegram connection": [
+    "Проверить сохранённое подключение Telegram",
+    "Tester la connexion Telegram enregistrée",
+    "Gespeicherte Telegram-Verbindung testen",
+    "Probar conexión de Telegram guardada",
+    "Prova connessione Telegram salvata"
+  ],
+  "Subscriptions Reminder: your test reminder is working.": [
+    "Subscriptions Reminder: тестовое напоминание работает.",
+    "Subscriptions Reminder : votre rappel de test fonctionne.",
+    "Subscriptions Reminder: Ihre Testerinnerung funktioniert.",
+    "Subscriptions Reminder: el recordatorio de prueba funciona.",
+    "Subscriptions Reminder: il promemoria di prova funziona."
+  ],
+  "Telegram test delivered.": [
+    "Тест Telegram доставлен.",
+    "Test Telegram envoyé.",
+    "Telegram-Test zugestellt.",
+    "Prueba de Telegram entregada.",
+    "Prova Telegram recapitata."
+  ],
+  "Data & synchronization": [
+    "Данные и синхронизация",
+    "Données et synchronisation",
+    "Daten und Synchronisierung",
+    "Datos y sincronización",
+    "Dati e sincronizzazione"
+  ],
+  "Manage connection": [
+    "Управление подключением",
+    "Gérer la connexion",
+    "Verbindung verwalten",
+    "Gestionar conexión",
+    "Gestisci connessione"
+  ],
+  "Local offline copy": [
+    "Локальная копия",
+    "Copie locale hors ligne",
+    "Lokale Offlinekopie",
+    "Copia local sin conexión",
+    "Copia locale non in linea"
+  ],
+  "Change local data folder": [
+    "Изменить папку данных",
+    "Changer le dossier local",
+    "Lokalen Datenordner ändern",
+    "Cambiar carpeta de datos local",
+    "Cambia cartella dati locale"
+  ],
+  "Disconnect Google Drive before changing the local data folder.": [
+    "Отключите Google Drive перед сменой папки данных.",
+    "Déconnectez Google Drive avant de changer le dossier local.",
+    "Trennen Sie Google Drive vor dem Ändern des Datenordners.",
+    "Desconecta Google Drive antes de cambiar la carpeta de datos.",
+    "Disconnetti Google Drive prima di cambiare la cartella dati."
+  ],
+  "Data folder updated.": [
+    "Папка данных изменена.",
+    "Dossier de données modifié.",
+    "Datenordner aktualisiert.",
+    "Carpeta de datos actualizada.",
+    "Cartella dati aggiornata."
+  ],
+  "Updates": [
+    "Обновления",
+    "Mises à jour",
+    "Updates",
+    "Actualizaciones",
+    "Aggiornamenti"
+  ],
+  "Version {} · Windows x64": [
+    "Версия {} · Windows x64",
+    "Version {} · Windows x64",
+    "Version {} · Windows x64",
+    "Versión {} · Windows x64",
+    "Versione {} · Windows x64"
+  ],
+  "Check for updates": [
+    "Проверить обновления",
+    "Rechercher les mises à jour",
+    "Nach Updates suchen",
+    "Buscar actualizaciones",
+    "Cerca aggiornamenti"
+  ],
+  "Checking GitHub...": [
+    "Проверка GitHub...",
+    "Vérification sur GitHub...",
+    "GitHub wird geprüft...",
+    "Comprobando GitHub...",
+    "Controllo GitHub..."
+  ],
+  "You are up to date.": [
+    "Установлена последняя версия.",
+    "Vous êtes à jour.",
+    "Sie sind auf dem neuesten Stand.",
+    "Tienes la última versión.",
+    "La versione è aggiornata."
+  ],
+  "Downloading and verifying update...": [
+    "Загрузка и проверка обновления...",
+    "Téléchargement et vérification...",
+    "Update wird heruntergeladen und geprüft...",
+    "Descargando y verificando actualización...",
+    "Download e verifica aggiornamento..."
+  ],
+  "Version {} is available.": [
+    "Доступна версия {}.",
+    "La version {} est disponible.",
+    "Version {} ist verfügbar.",
+    "La versión {} está disponible.",
+    "È disponibile la versione {}."
+  ],
+  "Download and install": [
+    "Скачать и установить",
+    "Télécharger et installer",
+    "Herunterladen und installieren",
+    "Descargar e instalar",
+    "Scarica e installa"
+  ],
+  "Enter a Telegram token and chat ID, or disable Telegram reminders.": [
+    "Укажите токен и ID чата Telegram или отключите эти напоминания.",
+    "Saisissez le jeton et l'ID de chat Telegram ou désactivez les rappels Telegram.",
+    "Geben Sie Telegram-Token und Chat-ID ein oder deaktivieren Sie Telegram-Erinnerungen.",
+    "Introduce el token e ID de chat de Telegram o desactiva sus recordatorios.",
+    "Inserisci token e ID della chat Telegram o disattiva i relativi promemoria."
+  ],
+  "Settings saved.": [
+    "Настройки сохранены.",
+    "Paramètres enregistrés.",
+    "Einstellungen gespeichert.",
+    "Ajustes guardados.",
+    "Impostazioni salvate."
+  ],
+  "Edit subscription": [
+    "Изменить подписку",
+    "Modifier l'abonnement",
+    "Abonnement bearbeiten",
+    "Editar suscripción",
+    "Modifica abbonamento"
+  ],
+  "Add subscription": [
+    "Добавить подписку",
+    "Ajouter un abonnement",
+    "Abonnement hinzufügen",
+    "Añadir suscripción",
+    "Aggiungi abbonamento"
+  ],
+  "Subscription name": [
+    "Название подписки",
+    "Nom de l'abonnement",
+    "Abonnementname",
+    "Nombre de suscripción",
+    "Nome abbonamento"
+  ],
+  "Expiry date (YYYY-MM-DD)": [
+    "Дата истечения (ГГГГ-ММ-ДД)",
+    "Date d'échéance (AAAA-MM-JJ)",
+    "Ablaufdatum (JJJJ-MM-TT)",
+    "Vencimiento (AAAA-MM-DD)",
+    "Scadenza (AAAA-MM-GG)"
+  ],
+  "Remind days before": [
+    "Напомнить за дней",
+    "Rappel en jours avant",
+    "Tage vorher erinnern",
+    "Recordar días antes",
+    "Ricorda giorni prima"
+  ],
+  "Billing period": [
+    "Период оплаты",
+    "Période de facturation",
+    "Abrechnungszeitraum",
+    "Período de facturación",
+    "Periodo di fatturazione"
+  ],
+  "Price (optional)": [
+    "Цена (необязательно)",
+    "Prix (facultatif)",
+    "Preis (optional)",
+    "Precio (opcional)",
+    "Prezzo (facoltativo)"
+  ],
+  "Currency": [
+    "Валюта",
+    "Devise",
+    "Währung",
+    "Moneda",
+    "Valuta"
+  ],
+  "Notes": [
+    "Заметки",
+    "Notes",
+    "Notizen",
+    "Notas",
+    "Note"
+  ],
+  "Active reminders": [
+    "Напоминания активны",
+    "Rappels actifs",
+    "Erinnerungen aktiv",
+    "Recordatorios activos",
+    "Promemoria attivi"
+  ],
+  "Save subscription": [
+    "Сохранить подписку",
+    "Enregistrer l'abonnement",
+    "Abonnement speichern",
+    "Guardar suscripción",
+    "Salva abbonamento"
+  ],
+  "Enter a valid expiry date as YYYY-MM-DD.": [
+    "Укажите дату в формате ГГГГ-ММ-ДД.",
+    "Saisissez une date valide au format AAAA-MM-JJ.",
+    "Geben Sie ein gültiges Datum als JJJJ-MM-TT ein.",
+    "Introduce una fecha válida como AAAA-MM-DD.",
+    "Inserisci una data valida nel formato AAAA-MM-GG."
+  ],
+  "This subscription changed outside the editor. Close this editor and open it again.": [
+    "Подписка изменена вне редактора. Закройте его и откройте снова.",
+    "Cet abonnement a changé ailleurs. Fermez cet éditeur et rouvrez-le.",
+    "Das Abonnement wurde außerhalb des Editors geändert. Schließen und öffnen Sie ihn erneut.",
+    "La suscripción cambió fuera del editor. Ciérralo y ábrelo de nuevo.",
+    "L'abbonamento è cambiato fuori dall'editor. Chiudilo e riaprilo."
+  ],
+  "Subscription saved.": [
+    "Подписка сохранена.",
+    "Abonnement enregistré.",
+    "Abonnement gespeichert.",
+    "Suscripción guardada.",
+    "Abbonamento salvato."
+  ],
+  "Cancel": [
+    "Отмена",
+    "Annuler",
+    "Abbrechen",
+    "Cancelar",
+    "Annulla"
+  ],
+  "A new version is available.": [
+    "Доступна новая версия.",
+    "Une nouvelle version est disponible.",
+    "Eine neue Version ist verfügbar.",
+    "Hay una nueva versión disponible.",
+    "È disponibile una nuova versione."
+  ],
+  "View update": [
+    "Посмотреть обновление",
+    "Voir la mise à jour",
+    "Update ansehen",
+    "Ver actualización",
+    "Visualizza aggiornamento"
+  ],
+  "Dismiss": [
+    "Скрыть",
+    "Fermer",
+    "Schließen",
+    "Descartar",
+    "Chiudi"
+  ],
+  "Delete subscription?": [
+    "Удалить подписку?",
+    "Supprimer l'abonnement ?",
+    "Abonnement löschen?",
+    "¿Eliminar suscripción?",
+    "Eliminare l'abbonamento?"
+  ],
+  "This removes the subscription and its notes from the current data file.": [
+    "Подписка и её заметки будут удалены из текущего файла данных.",
+    "Cela supprime l'abonnement et ses notes du fichier de données actuel.",
+    "Dies entfernt das Abonnement und seine Notizen aus der aktuellen Datendatei.",
+    "Esto elimina la suscripción y sus notas del archivo de datos actual.",
+    "L'abbonamento e le sue note verranno rimossi dal file dati corrente."
+  ],
+  "Delete": [
+    "Удалить",
+    "Supprimer",
+    "Löschen",
+    "Eliminar",
+    "Elimina"
+  ],
+  "Subscription deleted.": [
+    "Подписка удалена.",
+    "Abonnement supprimé.",
+    "Abonnement gelöscht.",
+    "Suscripción eliminada.",
+    "Abbonamento eliminato."
+  ],
+  "Expiry date renewed.": [
+    "Срок подписки продлён.",
+    "Échéance renouvelée.",
+    "Ablaufdatum verlängert.",
+    "Fecha de vencimiento renovada.",
+    "Scadenza rinnovata."
+  ],
+  "Subscription updated.": [
+    "Подписка обновлена.",
+    "Abonnement modifié.",
+    "Abonnement aktualisiert.",
+    "Suscripción actualizada.",
+    "Abbonamento aggiornato."
+  ],
+  "Monthly": [
+    "Ежемесячно",
+    "Mensuel",
+    "Monatlich",
+    "Mensual",
+    "Mensile"
+  ],
+  "Quarterly": [
+    "Ежеквартально",
+    "Trimestriel",
+    "Vierteljährlich",
+    "Trimestral",
+    "Trimestrale"
+  ],
+  "Yearly": [
+    "Ежегодно",
+    "Annuel",
+    "Jährlich",
+    "Anual",
+    "Annuale"
+  ],
+  "Weekly": [
+    "Еженедельно",
+    "Hebdomadaire",
+    "Wöchentlich",
+    "Semanal",
+    "Settimanale"
+  ],
+  "One time": [
+    "Разовая",
+    "Unique",
+    "Einmalig",
+    "Una vez",
+    "Una tantum"
+  ],
+  "Enter a subscription name.": [
+    "Введите название подписки.",
+    "Saisissez un nom d'abonnement.",
+    "Geben Sie einen Abonnementnamen ein.",
+    "Introduce un nombre de suscripción.",
+    "Inserisci un nome per l'abbonamento."
+  ],
+  "Use at most 150 characters for the name.": [
+    "Название должно быть не длиннее 150 символов.",
+    "Le nom ne doit pas dépasser 150 caractères.",
+    "Der Name darf höchstens 150 Zeichen haben.",
+    "El nombre debe tener como máximo 150 caracteres.",
+    "Il nome può contenere al massimo 150 caratteri."
+  ],
+  "Reminder lead time must be between 0 and 365 days.": [
+    "Срок напоминания должен быть от 0 до 365 дней.",
+    "Le délai du rappel doit être de 0 à 365 jours.",
+    "Die Vorlaufzeit muss zwischen 0 und 365 Tagen liegen.",
+    "La antelación debe ser de 0 a 365 días.",
+    "L'anticipo del promemoria deve essere tra 0 e 365 giorni."
+  ],
+  "Enter a positive price (for example 9.99), or leave it empty.": [
+    "Введите положительную цену (например, 9.99) или оставьте поле пустым.",
+    "Saisissez un prix positif (par exemple 9.99) ou laissez vide.",
+    "Geben Sie einen positiven Preis ein (z. B. 9.99) oder lassen Sie das Feld leer.",
+    "Introduce un precio positivo (por ejemplo, 9.99) o déjalo vacío.",
+    "Inserisci un prezzo positivo (ad esempio 9.99) o lascia vuoto."
+  ],
+  "Currency must be at most 12 characters.": [
+    "Валюта должна быть не длиннее 12 символов.",
+    "La devise ne doit pas dépasser 12 caractères.",
+    "Die Währung darf höchstens 12 Zeichen haben.",
+    "La moneda debe tener como máximo 12 caracteres.",
+    "La valuta può contenere al massimo 12 caratteri."
+  ],
+  "Open Subscriptions Reminder": [
+    "Открыть Subscriptions Reminder",
+    "Ouvrir Subscriptions Reminder",
+    "Subscriptions Reminder öffnen",
+    "Abrir Subscriptions Reminder",
+    "Apri Subscriptions Reminder"
+  ],
+  "Quit": [
+    "Выход",
+    "Quitter",
+    "Beenden",
+    "Salir",
+    "Esci"
+  ],
+  "Subscription reminder": [
+    "Напоминание о подписке",
+    "Rappel d'abonnement",
+    "Abonnementerinnerung",
+    "Recordatorio de suscripción",
+    "Promemoria abbonamento"
+  ],
+  "expired {} day(s) ago": [
+    "истекла {} дн. назад",
+    "a expiré il y a {} jour(s)",
+    "ist vor {} Tag(en) abgelaufen",
+    "venció hace {} día(s)",
+    "è scaduto {} giorno/i fa"
+  ],
+  "expires today": [
+    "истекает сегодня",
+    "expire aujourd'hui",
+    "läuft heute ab",
+    "vence hoy",
+    "scade oggi"
+  ],
+  "expires in {} day(s)": [
+    "истекает через {} дн.",
+    "expire dans {} jour(s)",
+    "läuft in {} Tag(en) ab",
+    "vence en {} día(s)",
+    "scade tra {} giorno/i"
+  ],
+  "{} subscriptions need attention: {}. Open the app for details.": [
+    "Подписок, требующих внимания: {}. {}. Откройте приложение для подробностей.",
+    "{} abonnements à surveiller : {}. Ouvrez l'application pour les détails.",
+    "{} Abonnements erfordern Aufmerksamkeit: {}. Details finden Sie in der App.",
+    "{} suscripciones requieren atención: {}. Abre la aplicación para ver detalles.",
+    "{} abbonamenti da controllare: {}. Apri l'app per i dettagli."
+  ],
+  "Wait for the current recognition request to finish.": [
+    "Дождитесь завершения распознавания.",
+    "Attendez la fin de la reconnaissance.",
+    "Warten Sie auf den Abschluss der Erkennung.",
+    "Espera a que termine el reconocimiento.",
+    "Attendi il completamento del riconoscimento."
+  ],
+  "Choose or paste an image first.": [
+    "Сначала выберите или вставьте изображение.",
+    "Choisissez ou collez d'abord une image.",
+    "Wählen Sie zuerst ein Bild oder fügen Sie es ein.",
+    "Primero elige o pega una imagen.",
+    "Prima scegli o incolla un'immagine."
+  ],
+  "Enable AI image import in Settings and save the connection first.": [
+    "Сначала включите импорт ИИ в настройках и сохраните подключение.",
+    "Activez l'importation IA dans les paramètres et enregistrez la connexion.",
+    "Aktivieren Sie zuerst den KI-Bildimport und speichern Sie die Verbindung.",
+    "Activa la importación con IA en Ajustes y guarda la conexión.",
+    "Attiva l'importazione IA nelle impostazioni e salva la connessione."
+  ],
+  "Choose a vision model in Settings and save it first.": [
+    "Выберите модель с поддержкой изображений в настройках и сохраните.",
+    "Choisissez un modèle visuel dans les paramètres et enregistrez.",
+    "Wählen Sie ein Bildmodell in den Einstellungen und speichern Sie es.",
+    "Elige un modelo visual en Ajustes y guárdalo.",
+    "Scegli un modello visivo nelle impostazioni e salva."
+  ],
+  "No subscriptions were found in this image.": [
+    "На изображении не найдены подписки.",
+    "Aucun abonnement trouvé dans cette image.",
+    "In diesem Bild wurden keine Abonnements gefunden.",
+    "No se encontraron suscripciones en esta imagen.",
+    "Nessun abbonamento trovato nell'immagine."
+  ],
+  "Enable AI image import": [
+    "Включить импорт изображений с ИИ",
+    "Activer l'importation d'images par IA",
+    "KI-Bildimport aktivieren",
+    "Activar importación de imágenes con IA",
+    "Abilita importazione immagini con IA"
+  ],
+  "Base URL": [
+    "Базовый URL",
+    "URL de base",
+    "Basis-URL",
+    "URL base",
+    "URL di base"
+  ],
+  "The API key was cleared because the endpoint changed. Enter the key for the new endpoint.": [
+    "Ключ API удалён из-за смены адреса. Введите ключ для нового адреса.",
+    "La clé API a été effacée après le changement d'adresse. Saisissez la nouvelle clé.",
+    "Der API-Schlüssel wurde wegen der geänderten Adresse gelöscht. Geben Sie den neuen Schlüssel ein.",
+    "Se borró la clave API porque cambió la dirección. Introduce la nueva clave.",
+    "La chiave API è stata cancellata dopo il cambio di indirizzo. Inserisci la nuova chiave."
+  ],
+  "API key (optional for servers without authentication)": [
+    "Ключ API (необязательно для серверов без авторизации)",
+    "Clé API (facultative sans authentification)",
+    "API-Schlüssel (optional ohne Authentifizierung)",
+    "Clave API (opcional en servidores sin autenticación)",
+    "Chiave API (facoltativa per server senza autenticazione)"
+  ],
+  "Vision model ID": [
+    "ID модели изображений",
+    "ID du modèle visuel",
+    "ID des Bildmodells",
+    "ID del modelo visual",
+    "ID del modello visivo"
+  ],
+  "Load models": [
+    "Загрузить модели",
+    "Charger les modèles",
+    "Modelle laden",
+    "Cargar modelos",
+    "Carica modelli"
+  ],
+  "Enter a vision-capable model ID": [
+    "Введите ID модели с поддержкой изображений",
+    "Saisissez l'ID d'un modèle visuel",
+    "ID eines bildfähigen Modells eingeben",
+    "Introduce el ID de un modelo visual",
+    "Inserisci l'ID di un modello visivo"
+  ],
+  "Loading models...": [
+    "Загрузка моделей...",
+    "Chargement des modèles...",
+    "Modelle werden geladen...",
+    "Cargando modelos...",
+    "Caricamento modelli..."
+  ],
+  "Select from available models...": [
+    "Выберите доступную модель...",
+    "Choisir parmi les modèles disponibles...",
+    "Verfügbares Modell auswählen...",
+    "Selecciona un modelo disponible...",
+    "Seleziona un modello disponibile..."
+  ],
+  "Universal follows the active AI-Hub model. Select a model with image input.": [
+    "Universal использует активную модель AI-Hub. Выберите модель с поддержкой изображений.",
+    "Universal suit le modèle AI-Hub actif. Choisissez un modèle acceptant les images.",
+    "Universal verwendet das aktive AI-Hub-Modell. Wählen Sie ein Modell mit Bildeingabe.",
+    "Universal usa el modelo activo de AI-Hub. Selecciona un modelo que admita imágenes.",
+    "Universal segue il modello AI-Hub attivo. Scegli un modello che accetti immagini."
+  ],
+  "Use an OpenRouter API key and a model with image input. Provider usage may be billed to your account.": [
+    "Используйте ключ OpenRouter и модель с поддержкой изображений. Провайдер может взимать плату.",
+    "Utilisez une clé OpenRouter et un modèle acceptant les images. Le fournisseur peut facturer l'utilisation.",
+    "Verwenden Sie einen OpenRouter-Schlüssel und ein Bildmodell. Die Nutzung kann kostenpflichtig sein.",
+    "Usa una clave de OpenRouter y un modelo con imágenes. El proveedor puede cobrar por el uso.",
+    "Usa una chiave OpenRouter e un modello con immagini. Il fornitore può addebitare l'utilizzo."
+  ],
+  "Privacy & connection details": [
+    "Конфиденциальность и подключение",
+    "Confidentialité et connexion",
+    "Datenschutz und Verbindung",
+    "Privacidad y conexión",
+    "Privacy e connessione"
+  ],
+  "Each provider has its own encrypted API key. Changing the URL clears its key. Images are sent only when you request recognition.": [
+    "У каждого провайдера отдельный зашифрованный ключ. Смена URL удаляет ключ. Изображения отправляются только по вашему запросу.",
+    "Chaque fournisseur a sa clé chiffrée. Changer l'URL efface la clé. Les images ne sont envoyées qu'à votre demande.",
+    "Jeder Anbieter hat einen verschlüsselten Schlüssel. Eine URL-Änderung löscht ihn. Bilder werden nur auf Ihre Anforderung gesendet.",
+    "Cada proveedor tiene una clave cifrada. Cambiar la URL borra la clave. Las imágenes solo se envían cuando lo solicitas.",
+    "Ogni fornitore ha una chiave cifrata. Cambiare URL la cancella. Le immagini vengono inviate solo su tua richiesta."
+  ],
+  "Save settings before recognizing an image. OpenAI-compatible endpoints use Chat Completions with image input.": [
+    "Сохраните настройки до распознавания. Совместимые с OpenAI серверы используют Chat Completions с изображениями.",
+    "Enregistrez avant la reconnaissance. Les services compatibles OpenAI utilisent Chat Completions avec images.",
+    "Speichern Sie vor der Erkennung. OpenAI-kompatible Dienste verwenden Chat Completions mit Bildeingabe.",
+    "Guarda antes de reconocer. Los servicios compatibles con OpenAI usan Chat Completions con imágenes.",
+    "Salva prima del riconoscimento. I servizi compatibili OpenAI usano Chat Completions con immagini."
+  ],
+  "An API key cannot contain a line break.": [
+    "Ключ API не может содержать перенос строки.",
+    "Une clé API ne peut pas contenir de saut de ligne.",
+    "Ein API-Schlüssel darf keinen Zeilenumbruch enthalten.",
+    "Una clave API no puede contener saltos de línea.",
+    "Una chiave API non può contenere interruzioni di riga."
+  ],
+  "Image import": [
+    "Импорт изображения",
+    "Importation d'image",
+    "Bildimport",
+    "Importación de imagen",
+    "Importazione immagine"
+  ],
+  "Save selected subscriptions": [
+    "Сохранить выбранные подписки",
+    "Enregistrer les abonnements sélectionnés",
+    "Ausgewählte Abonnements speichern",
+    "Guardar suscripciones seleccionadas",
+    "Salva abbonamenti selezionati"
+  ],
+  "Choose a vision model": [
+    "Выберите модель изображений",
+    "Choisir un modèle visuel",
+    "Bildmodell auswählen",
+    "Elige un modelo visual",
+    "Scegli un modello visivo"
+  ],
+  "Attach and recognize": [
+    "Прикрепить и распознать",
+    "Joindre et reconnaître",
+    "Anhängen und erkennen",
+    "Adjuntar y reconocer",
+    "Allega e riconosci"
+  ],
+  "Images": [
+    "Изображения",
+    "Images",
+    "Bilder",
+    "Imágenes",
+    "Immagini"
+  ],
+  "Paste image": [
+    "Вставить изображение",
+    "Coller une image",
+    "Bild einfügen",
+    "Pegar imagen",
+    "Incolla immagine"
+  ],
+  "Recognize again": [
+    "Распознать снова",
+    "Reconnaître à nouveau",
+    "Erneut erkennen",
+    "Reconocer de nuevo",
+    "Riconosci di nuovo"
+  ],
+  "Connection settings": [
+    "Настройки подключения",
+    "Paramètres de connexion",
+    "Verbindungseinstellungen",
+    "Ajustes de conexión",
+    "Impostazioni connessione"
+  ],
+  "PNG, JPEG, WebP · drop an image or press Ctrl+V · sent to your selected provider": [
+    "PNG, JPEG, WebP · перетащите изображение или нажмите Ctrl+V · отправка выбранному провайдеру",
+    "PNG, JPEG, WebP · déposez une image ou Ctrl+V · envoyée au fournisseur choisi",
+    "PNG, JPEG, WebP · Bild ablegen oder Strg+V · an gewählten Anbieter gesendet",
+    "PNG, JPEG, WebP · arrastra una imagen o pulsa Ctrl+V · enviada al proveedor elegido",
+    "PNG, JPEG, WebP · trascina un'immagine o premi Ctrl+V · inviata al fornitore scelto"
+  ],
+  "Reading the image...": [
+    "Распознавание изображения...",
+    "Lecture de l'image...",
+    "Bild wird gelesen...",
+    "Leyendo la imagen...",
+    "Lettura immagine..."
+  ],
+  "Source image · {} · {} × {}": [
+    "Исходное изображение · {} · {} × {}",
+    "Image source · {} · {} × {}",
+    "Quellbild · {} · {} × {}",
+    "Imagen original · {} · {} × {}",
+    "Immagine originale · {} · {} × {}"
+  ],
+  "Review {} detected subscriptions": [
+    "Проверьте найденные подписки: {}",
+    "Vérifier {} abonnements détectés",
+    "{} erkannte Abonnements prüfen",
+    "Revisa {} suscripciones detectadas",
+    "Controlla {} abbonamenti rilevati"
+  ],
+  "Correct uncertain fields, then save the selected records.": [
+    "Исправьте неточные поля и сохраните выбранные записи.",
+    "Corrigez les champs incertains, puis enregistrez les éléments sélectionnés.",
+    "Korrigieren Sie unsichere Felder und speichern Sie die Auswahl.",
+    "Corrige los campos dudosos y guarda los registros seleccionados.",
+    "Correggi i campi incerti, poi salva i record selezionati."
+  ],
+  "Model notes ({})": [
+    "Заметки модели ({})",
+    "Notes du modèle ({})",
+    "Modellhinweise ({})",
+    "Notas del modelo ({})",
+    "Note del modello ({})"
+  ],
+  "Include this subscription": [
+    "Включить эту подписку",
+    "Inclure cet abonnement",
+    "Dieses Abonnement übernehmen",
+    "Incluir esta suscripción",
+    "Includi questo abbonamento"
+  ],
+  "Expires": [
+    "Истекает",
+    "Échéance",
+    "Ablauf",
+    "Vence",
+    "Scadenza"
+  ],
+  "Price": [
+    "Цена",
+    "Prix",
+    "Preis",
+    "Precio",
+    "Prezzo"
+  ],
+  "Remind": [
+    "Напомнить за",
+    "Rappel",
+    "Erinnerung",
+    "Recordar",
+    "Ricorda"
+  ],
+  "days before expiry": [
+    "дней до истечения",
+    "jours avant l'échéance",
+    "Tage vor Ablauf",
+    "días antes del vencimiento",
+    "giorni prima della scadenza"
+  ],
+  "Drop a screenshot here": [
+    "Перетащите скриншот сюда",
+    "Déposez une capture ici",
+    "Screenshot hier ablegen",
+    "Arrastra una captura aquí",
+    "Trascina qui una schermata"
+  ],
+  "You can also attach a file or paste an image from the clipboard.": [
+    "Также можно выбрать файл или вставить изображение из буфера.",
+    "Vous pouvez aussi joindre un fichier ou coller une image du presse-papiers.",
+    "Sie können auch eine Datei anhängen oder ein Bild aus der Zwischenablage einfügen.",
+    "También puedes adjuntar un archivo o pegar una imagen del portapapeles.",
+    "Puoi anche allegare un file o incollare un'immagine dagli appunti."
+  ],
+  "Saved {} subscription(s). Skipped {} exact duplicate(s).": [
+    "Сохранено подписок: {}. Пропущено точных копий: {}.",
+    "{} abonnement(s) enregistré(s). {} doublon(s) exact(s) ignoré(s).",
+    "{} Abonnement(s) gespeichert. {} genaue Duplikate übersprungen.",
+    "{} suscripciones guardadas. {} duplicados exactos omitidos.",
+    "{} abbonamenti salvati. {} duplicati esatti ignorati."
+  ],
+  "Automatic synchronization with a local offline copy.": [
+    "Автоматическая синхронизация с локальной копией.",
+    "Synchronisation automatique avec une copie locale hors ligne.",
+    "Automatische Synchronisierung mit lokaler Offlinekopie.",
+    "Sincronización automática con copia local sin conexión.",
+    "Sincronizzazione automatica con copia locale non in linea."
+  ],
+  "Connection": [
+    "Подключение",
+    "Connexion",
+    "Verbindung",
+    "Conexión",
+    "Connessione"
+  ],
+  "Last synchronized: {}": [
+    "Последняя синхронизация: {}",
+    "Dernière synchronisation : {}",
+    "Zuletzt synchronisiert: {}",
+    "Última sincronización: {}",
+    "Ultima sincronizzazione: {}"
+  ],
+  "Local changes are waiting to be uploaded.": [
+    "Локальные изменения ожидают отправки.",
+    "Des modifications locales attendent leur envoi.",
+    "Lokale Änderungen warten auf den Upload.",
+    "Los cambios locales están pendientes de subir.",
+    "Le modifiche locali sono in attesa di caricamento."
+  ],
+  "Reconnect / change account": [
+    "Переподключить / сменить аккаунт",
+    "Reconnecter / changer de compte",
+    "Neu verbinden / Konto wechseln",
+    "Reconectar / cambiar cuenta",
+    "Riconnetti / cambia account"
+  ],
+  "Connect Google Drive": [
+    "Подключить Google Drive",
+    "Connecter Google Drive",
+    "Google Drive verbinden",
+    "Conectar Google Drive",
+    "Connetti Google Drive"
+  ],
+  "Sync now": [
+    "Синхронизировать",
+    "Synchroniser",
+    "Jetzt synchronisieren",
+    "Sincronizar ahora",
+    "Sincronizza ora"
+  ],
+  "Disconnect this computer": [
+    "Отключить этот компьютер",
+    "Déconnecter cet ordinateur",
+    "Diesen Computer trennen",
+    "Desconectar este equipo",
+    "Disconnetti questo computer"
+  ],
+  "Open browser again": [
+    "Открыть браузер снова",
+    "Rouvrir le navigateur",
+    "Browser erneut öffnen",
+    "Abrir navegador de nuevo",
+    "Riapri browser"
+  ],
+  "Cancel sign-in": [
+    "Отменить вход",
+    "Annuler la connexion",
+    "Anmeldung abbrechen",
+    "Cancelar inicio de sesión",
+    "Annulla accesso"
+  ],
+  "Choose your Google account in the browser and allow subscription sync. No setup files are needed.": [
+    "Выберите аккаунт Google в браузере и разрешите синхронизацию. Файлы настройки не нужны.",
+    "Choisissez votre compte Google dans le navigateur et autorisez la synchronisation. Aucun fichier de configuration requis.",
+    "Wählen Sie im Browser Ihr Google-Konto und erlauben Sie die Synchronisierung. Keine Einrichtungsdateien nötig.",
+    "Elige tu cuenta de Google en el navegador y permite sincronizar. No se necesitan archivos de configuración.",
+    "Scegli l'account Google nel browser e consenti la sincronizzazione. Non servono file di configurazione."
+  ],
+  "Google sign-in is not configured in this build. A release with the app's Google connection is required.": [
+    "В этой сборке не настроен вход Google. Нужен выпуск со встроенным подключением.",
+    "La connexion Google n'est pas configurée dans cette version. Une version avec connexion intégrée est nécessaire.",
+    "Die Google-Anmeldung ist in diesem Build nicht eingerichtet. Eine Version mit integrierter Verbindung ist nötig.",
+    "Este paquete no tiene configurado el acceso a Google. Se necesita una versión con conexión integrada.",
+    "L'accesso Google non è configurato in questa build. Serve una versione con connessione integrata."
+  ],
+  "Synchronize automatically": [
+    "Синхронизировать автоматически",
+    "Synchroniser automatiquement",
+    "Automatisch synchronisieren",
+    "Sincronizar automáticamente",
+    "Sincronizza automaticamente"
+  ],
+  "Automatic sync runs after local changes and checks other computers every 60 seconds. Manual Sync now remains available when automatic sync is off.": [
+    "Синхронизация запускается после локальных изменений и проверяет другие компьютеры каждые 60 секунд. Ручная синхронизация доступна всегда.",
+    "La synchronisation suit les changements locaux et vérifie les autres ordinateurs toutes les 60 secondes. La synchronisation manuelle reste disponible.",
+    "Die Synchronisierung folgt lokalen Änderungen und prüft andere Computer alle 60 Sekunden. Manuelle Synchronisierung bleibt verfügbar.",
+    "Se sincroniza tras cambios locales y se comprueban otros equipos cada 60 segundos. La sincronización manual sigue disponible.",
+    "La sincronizzazione segue le modifiche locali e controlla gli altri computer ogni 60 secondi. Quella manuale resta disponibile."
+  ],
+  "Advanced: custom Google connection": [
+    "Дополнительно: своё подключение Google",
+    "Avancé : connexion Google personnalisée",
+    "Erweitert: eigene Google-Verbindung",
+    "Avanzado: conexión Google propia",
+    "Avanzate: connessione Google personalizzata"
+  ],
+  "OAuth client override": [
+    "Свой клиент OAuth",
+    "Client OAuth personnalisé",
+    "Eigener OAuth-Client",
+    "Cliente OAuth personalizado",
+    "Client OAuth personalizzato"
+  ],
+  "For developers and self-hosted builds. A custom client uses its own app-data space; use the same client on all your computers.": [
+    "Для разработчиков и собственных сборок. Клиент использует отдельное хранилище; используйте один клиент на всех компьютерах.",
+    "Pour les développeurs et versions personnalisées. Chaque client a son espace privé ; utilisez le même sur tous vos ordinateurs.",
+    "Für Entwickler und eigene Builds. Ein eigener Client hat einen eigenen Datenspeicher; verwenden Sie überall denselben Client.",
+    "Para desarrolladores y paquetes propios. Cada cliente usa su espacio privado; usa el mismo en todos tus equipos.",
+    "Per sviluppatori e build proprie. Ogni client usa uno spazio privato; usa lo stesso su tutti i computer."
+  ],
+  "Custom client setup guide": [
+    "Инструкция по своему клиенту",
+    "Guide du client personnalisé",
+    "Anleitung für eigenen Client",
+    "Guía de cliente personalizado",
+    "Guida al client personalizzato"
+  ],
+  "Client: {}": [
+    "Клиент: {}",
+    "Client : {}",
+    "Client: {}",
+    "Cliente: {}",
+    "Client: {}"
+  ],
+  "Use built-in Google connection": [
+    "Использовать встроенное подключение Google",
+    "Utiliser la connexion Google intégrée",
+    "Integrierte Google-Verbindung verwenden",
+    "Usar conexión Google integrada",
+    "Usa connessione Google integrata"
+  ],
+  "Built-in connection selected. Connect Google Drive to sign in.": [
+    "Выбрано встроенное подключение. Подключите Google Drive для входа.",
+    "Connexion intégrée sélectionnée. Connectez Google Drive pour vous identifier.",
+    "Integrierte Verbindung ausgewählt. Verbinden Sie Google Drive zur Anmeldung.",
+    "Conexión integrada seleccionada. Conecta Google Drive para iniciar sesión.",
+    "Connessione integrata selezionata. Connetti Google Drive per accedere."
+  ],
+  "Import Google OAuth JSON...": [
+    "Импортировать Google OAuth JSON...",
+    "Importer un JSON OAuth Google...",
+    "Google-OAuth-JSON importieren...",
+    "Importar JSON OAuth de Google...",
+    "Importa JSON OAuth Google..."
+  ],
+  "Google OAuth client": [
+    "Клиент Google OAuth",
+    "Client OAuth Google",
+    "Google-OAuth-Client",
+    "Cliente OAuth de Google",
+    "Client OAuth Google"
+  ],
+  "The OAuth configuration file is too large.": [
+    "Файл конфигурации OAuth слишком большой.",
+    "Le fichier de configuration OAuth est trop volumineux.",
+    "Die OAuth-Konfigurationsdatei ist zu groß.",
+    "El archivo de configuración OAuth es demasiado grande.",
+    "Il file di configurazione OAuth è troppo grande."
+  ],
+  "OAuth configuration submitted. Connect when the import finishes.": [
+    "Конфигурация OAuth отправлена. Подключитесь после завершения импорта.",
+    "Configuration OAuth envoyée. Connectez-vous après l'importation.",
+    "OAuth-Konfiguration übermittelt. Verbinden Sie sich nach dem Import.",
+    "Configuración OAuth enviada. Conecta cuando termine la importación.",
+    "Configurazione OAuth inviata. Connettiti al termine dell'importazione."
+  ],
+  "What is synchronized & privacy": [
+    "Что синхронизируется и конфиденциальность",
+    "Données synchronisées et confidentialité",
+    "Synchronisierte Daten und Datenschutz",
+    "Datos sincronizados y privacidad",
+    "Dati sincronizzati e privacy"
+  ],
+  "Subscription names, expiry dates, prices, notes, reminder lead times, and paused status.": [
+    "Названия подписок, даты, цены, заметки, сроки напоминаний и состояние паузы.",
+    "Noms, échéances, prix, notes, délais des rappels et état de pause.",
+    "Namen, Ablaufdaten, Preise, Notizen, Erinnerungsvorlauf und Pausenstatus.",
+    "Nombres, vencimientos, precios, notas, antelación y estado de pausa.",
+    "Nomi, scadenze, prezzi, note, anticipo promemoria e stato di pausa."
+  ],
+  "Data is kept in this application's private Google Drive app-data space. No Google Drive desktop folder or additional sync client is required. The app does not request access to all your Drive files.": [
+    "Данные хранятся в закрытом пространстве приложения в Google Drive. Папка Drive на компьютере и отдельный клиент не нужны. Доступ ко всем файлам Drive не запрашивается.",
+    "Les données restent dans l'espace privé de l'application sur Google Drive. Aucun dossier local ni client supplémentaire requis. L'accès à tous vos fichiers Drive n'est pas demandé.",
+    "Die Daten liegen im privaten Google-Drive-Appspeicher. Kein Desktopordner oder zusätzlicher Client ist nötig. Die App fordert keinen Zugriff auf alle Drive-Dateien an.",
+    "Los datos están en el espacio privado de la aplicación en Google Drive. No hace falta carpeta local ni cliente adicional. No se pide acceso a todos tus archivos.",
+    "I dati restano nello spazio privato dell'app in Google Drive. Non servono cartelle locali né altri client. L'app non richiede accesso a tutti i file Drive."
+  ],
+  "Google tokens, AI keys, Telegram credentials, and notification history stay on this computer. Cloud data uses Google's storage protection and HTTPS; this version does not add a master-password encryption layer.": [
+    "Токены Google, ключи ИИ, данные Telegram и история уведомлений остаются на компьютере. Облачные данные защищены Google и HTTPS; шифрование мастер-паролем не добавляется.",
+    "Les jetons Google, clés IA, identifiants Telegram et historique restent sur cet ordinateur. Le cloud utilise la protection Google et HTTPS, sans chiffrement par mot de passe maître.",
+    "Google-Token, KI-Schlüssel, Telegram-Daten und Benachrichtigungsverlauf bleiben lokal. Cloud-Daten nutzen Google-Schutz und HTTPS, ohne zusätzliche Masterpasswort-Verschlüsselung.",
+    "Los tokens Google, claves IA, credenciales Telegram e historial quedan en este equipo. La nube usa protección Google y HTTPS, sin cifrado adicional por contraseña maestra.",
+    "Token Google, chiavi IA, credenziali Telegram e cronologia restano sul computer. Il cloud usa protezione Google e HTTPS, senza ulteriore cifratura con password principale."
+  ],
+  "Connecting merges the current local subscription list with the selected Google account. Disconnecting retains both your local data and cloud snapshots.": [
+    "Подключение объединяет локальные подписки с выбранным аккаунтом Google. Отключение сохраняет локальные данные и облачные снимки.",
+    "La connexion fusionne les abonnements locaux avec le compte Google choisi. La déconnexion conserve les données locales et les copies cloud.",
+    "Die Verbindung führt lokale Abonnements mit dem Google-Konto zusammen. Beim Trennen bleiben lokale Daten und Cloud-Kopien erhalten.",
+    "Conectar combina las suscripciones locales con la cuenta Google elegida. Desconectar conserva datos locales y copias en la nube.",
+    "La connessione unisce gli abbonamenti locali all'account Google scelto. La disconnessione mantiene dati locali e copie cloud."
+  ],
+  "Review {} conflict(s)": [
+    "Разрешите конфликты: {}",
+    "Examiner {} conflit(s)",
+    "{} Konflikt(e) prüfen",
+    "Revisa {} conflictos",
+    "Controlla {} conflitti"
+  ],
+  "Independent edits are merged automatically. Choose a version when the same subscription changed concurrently; other versions remain safe until you resolve them.": [
+    "Независимые изменения объединяются автоматически. При одновременном изменении подписки выберите версию; остальные сохраняются до решения.",
+    "Les changements indépendants sont fusionnés. Choisissez une version en cas de modifications simultanées ; les autres sont conservées jusqu'à la résolution.",
+    "Unabhängige Änderungen werden zusammengeführt. Wählen Sie bei gleichzeitigen Änderungen eine Version; die anderen bleiben bis zur Auflösung erhalten.",
+    "Los cambios independientes se combinan. Elige una versión si hubo cambios simultáneos; las demás se conservan hasta resolverlos.",
+    "Le modifiche indipendenti si uniscono. Scegli una versione in caso di modifiche simultanee; le altre restano al sicuro fino alla risoluzione."
+  ],
+  "Subscription conflict": [
+    "Конфликт подписки",
+    "Conflit d'abonnement",
+    "Abonnementkonflikt",
+    "Conflicto de suscripción",
+    "Conflitto abbonamento"
+  ],
+  "Version {}{}": [
+    "Версия {}{}",
+    "Version {}{}",
+    "Version {}{}",
+    "Versión {}{}",
+    "Versione {}{}"
+  ],
+  " · current local version": [
+    " · текущая локальная версия",
+    " · version locale actuelle",
+    " · aktuelle lokale Version",
+    " · versión local actual",
+    " · versione locale attuale"
+  ],
+  "{} · expires {} · {} {}": [
+    "{} · истекает {} · {} {}",
+    "{} · échéance {} · {} {}",
+    "{} · Ablauf {} · {} {}",
+    "{} · vence {} · {} {}",
+    "{} · scade {} · {} {}"
+  ],
+  "{} · reminder {} days before · {}": [
+    "{} · напомнить за {} дн. · {}",
+    "{} · rappel {} jours avant · {}",
+    "{} · {} Tage vorher erinnern · {}",
+    "{} · recordar {} días antes · {}",
+    "{} · promemoria {} giorni prima · {}"
+  ],
+  "paused": [
+    "приостановлено",
+    "en pause",
+    "pausiert",
+    "en pausa",
+    "in pausa"
+  ],
+  "This version deletes the subscription.": [
+    "Эта версия удаляет подписку.",
+    "Cette version supprime l'abonnement.",
+    "Diese Version löscht das Abonnement.",
+    "Esta versión elimina la suscripción.",
+    "Questa versione elimina l'abbonamento."
+  ],
+  "Use this version and sync": [
+    "Выбрать эту версию и синхронизировать",
+    "Utiliser cette version et synchroniser",
+    "Diese Version verwenden und synchronisieren",
+    "Usar esta versión y sincronizar",
+    "Usa questa versione e sincronizza"
+  ],
+  "Keep all subscription versions and sync": [
+    "Сохранить все версии и синхронизировать",
+    "Conserver toutes les versions et synchroniser",
+    "Alle Versionen behalten und synchronisieren",
+    "Conservar todas las versiones y sincronizar",
+    "Mantieni tutte le versioni e sincronizza"
+  ],
+  "Google Drive is not connected.": [
+    "Google Drive не подключён.",
+    "Google Drive n'est pas connecté.",
+    "Google Drive ist nicht verbunden.",
+    "Google Drive no está conectado.",
+    "Google Drive non è connesso."
+  ],
+  "Finish Google sign-in in your browser. The app remains usable.": [
+    "Завершите вход Google в браузере. Приложение доступно для работы.",
+    "Terminez la connexion Google dans le navigateur. L'application reste utilisable.",
+    "Schließen Sie die Google-Anmeldung im Browser ab. Die App bleibt nutzbar.",
+    "Termina el acceso a Google en el navegador. La aplicación sigue disponible.",
+    "Completa l'accesso Google nel browser. L'app resta utilizzabile."
+  ],
+  "Google sign-in was cancelled.": [
+    "Вход Google отменён.",
+    "Connexion Google annulée.",
+    "Google-Anmeldung abgebrochen.",
+    "Se canceló el acceso a Google.",
+    "Accesso Google annullato."
+  ],
+  "Google returned no offline session. Connect again and accept the consent screen.": [
+    "Google не создал автономную сессию. Подключитесь снова и подтвердите разрешения.",
+    "Google n'a pas fourni de session hors ligne. Reconnectez-vous et acceptez les autorisations.",
+    "Google hat keine Offlinesitzung geliefert. Verbinden Sie sich erneut und stimmen Sie zu.",
+    "Google no devolvió una sesión sin conexión. Reconecta y acepta los permisos.",
+    "Google non ha fornito una sessione offline. Riconnettiti e accetta i permessi."
+  ],
+  "Disconnect this computer before changing its Google OAuth client.": [
+    "Отключите компьютер перед сменой клиента Google OAuth.",
+    "Déconnectez cet ordinateur avant de changer le client OAuth Google.",
+    "Trennen Sie diesen Computer vor dem Wechsel des Google-OAuth-Clients.",
+    "Desconecta este equipo antes de cambiar el cliente OAuth de Google.",
+    "Disconnetti questo computer prima di cambiare il client OAuth Google."
+  ],
+  "OAuth client imported. Connect Google Drive to sign in.": [
+    "Клиент OAuth импортирован. Подключите Google Drive для входа.",
+    "Client OAuth importé. Connectez Google Drive pour vous identifier.",
+    "OAuth-Client importiert. Verbinden Sie Google Drive zur Anmeldung.",
+    "Cliente OAuth importado. Conecta Google Drive para iniciar sesión.",
+    "Client OAuth importato. Connetti Google Drive per accedere."
+  ],
+  "This computer is disconnected. Local subscriptions and Google Drive snapshots were retained.": [
+    "Компьютер отключён. Локальные подписки и снимки Google Drive сохранены.",
+    "Cet ordinateur est déconnecté. Les abonnements locaux et copies Google Drive sont conservés.",
+    "Dieser Computer ist getrennt. Lokale Abonnements und Google-Drive-Kopien bleiben erhalten.",
+    "Este equipo está desconectado. Se conservaron las suscripciones y copias de Google Drive.",
+    "Questo computer è disconnesso. Abbonamenti locali e copie Google Drive sono conservati."
+  ],
+  "Automatic synchronization is paused. Use Sync now to transfer changes.": [
+    "Автосинхронизация приостановлена. Нажмите «Синхронизировать» для передачи изменений.",
+    "La synchronisation automatique est suspendue. Utilisez Synchroniser pour transférer les changements.",
+    "Automatische Synchronisierung pausiert. Übertragen Sie Änderungen mit Jetzt synchronisieren.",
+    "La sincronización automática está pausada. Usa Sincronizar ahora para transferir cambios.",
+    "Sincronizzazione automatica sospesa. Usa Sincronizza ora per trasferire le modifiche."
+  ],
+  "Connect Google Drive before resolving a cloud conflict.": [
+    "Подключите Google Drive перед разрешением облачного конфликта.",
+    "Connectez Google Drive avant de résoudre un conflit cloud.",
+    "Verbinden Sie Google Drive vor dem Auflösen eines Cloud-Konflikts.",
+    "Conecta Google Drive antes de resolver un conflicto de la nube.",
+    "Connetti Google Drive prima di risolvere un conflitto cloud."
+  ],
+  "Google sign-in is not configured in this build.": [
+    "В этой сборке не настроен вход Google.",
+    "La connexion Google n'est pas configurée dans cette version.",
+    "Die Google-Anmeldung ist in diesem Build nicht eingerichtet.",
+    "El acceso a Google no está configurado en este paquete.",
+    "L'accesso Google non è configurato in questa build."
+  ],
+  "Reconnect Google Drive to renew the session. Local changes are preserved.": [
+    "Подключите Google Drive снова для продления сессии. Локальные изменения сохранены.",
+    "Reconnectez Google Drive pour renouveler la session. Les changements locaux sont conservés.",
+    "Verbinden Sie Google Drive erneut. Lokale Änderungen bleiben erhalten.",
+    "Reconecta Google Drive para renovar la sesión. Los cambios locales se conservan.",
+    "Riconnetti Google Drive per rinnovare la sessione. Le modifiche locali restano conservate."
+  ],
+  "Synchronizing subscriptions and notes with Google Drive...": [
+    "Синхронизация подписок и заметок с Google Drive...",
+    "Synchronisation des abonnements et notes avec Google Drive...",
+    "Abonnements und Notizen werden mit Google Drive synchronisiert...",
+    "Sincronizando suscripciones y notas con Google Drive...",
+    "Sincronizzazione abbonamenti e note con Google Drive..."
+  ],
+  "Subscriptions and notes are synchronized.": [
+    "Подписки и заметки синхронизированы.",
+    "Les abonnements et notes sont synchronisés.",
+    "Abonnements und Notizen sind synchronisiert.",
+    "Las suscripciones y notas están sincronizadas.",
+    "Abbonamenti e note sincronizzati."
+  ],
+  "Synchronized with {} unresolved conflict(s). Review their versions below; no version was discarded.": [
+    "Синхронизация завершена; неразрешённых конфликтов: {}. Сравните версии ниже, все они сохранены.",
+    "Synchronisé avec {} conflit(s) non résolu(s). Examinez les versions ci-dessous ; aucune n'a été supprimée.",
+    "Synchronisiert mit {} ungelösten Konflikten. Prüfen Sie die Versionen unten; keine wurde verworfen.",
+    "Sincronizado con {} conflictos sin resolver. Revisa las versiones; ninguna se descartó.",
+    "Sincronizzato con {} conflitti irrisolti. Controlla le versioni sotto; nessuna è stata scartata."
+  ],
+  "Enter the Telegram bot token and chat ID in Settings.": [
+    "Укажите токен бота Telegram и ID чата в настройках.",
+    "Saisissez le jeton Telegram et l'ID du chat dans les paramètres.",
+    "Geben Sie Telegram-Bot-Token und Chat-ID in den Einstellungen ein.",
+    "Introduce el token del bot Telegram y el ID del chat en Ajustes.",
+    "Inserisci token del bot Telegram e ID chat nelle impostazioni."
+  ],
+  "The Telegram bot token has an invalid format.": [
+    "Неверный формат токена бота Telegram.",
+    "Le format du jeton Telegram est invalide.",
+    "Das Telegram-Bot-Token hat ein ungültiges Format.",
+    "El token del bot Telegram tiene un formato no válido.",
+    "Il token del bot Telegram ha un formato non valido."
+  ],
+  "Telegram delivery failed. Check the token, chat ID, network connection, and that you started the bot.": [
+    "Не удалось отправить в Telegram. Проверьте токен, ID чата, сеть и запуск бота.",
+    "Échec d'envoi Telegram. Vérifiez le jeton, l'ID du chat, le réseau et le démarrage du bot.",
+    "Telegram-Versand fehlgeschlagen. Prüfen Sie Token, Chat-ID, Netzwerk und Bot-Start.",
+    "Falló el envío a Telegram. Comprueba token, ID del chat, red e inicio del bot.",
+    "Invio Telegram non riuscito. Controlla token, ID chat, rete e avvio del bot."
+  ],
+  "Telegram returned an invalid response": [
+    "Telegram вернул неверный ответ",
+    "Réponse Telegram invalide",
+    "Ungültige Telegram-Antwort",
+    "Telegram devolvió una respuesta no válida",
+    "Telegram ha restituito una risposta non valida"
+  ],
+  "Telegram did not accept the message. Check the bot and chat ID.": [
+    "Telegram не принял сообщение. Проверьте бота и ID чата.",
+    "Telegram a refusé le message. Vérifiez le bot et l'ID du chat.",
+    "Telegram hat die Nachricht abgelehnt. Prüfen Sie Bot und Chat-ID.",
+    "Telegram no aceptó el mensaje. Comprueba el bot y el ID del chat.",
+    "Telegram non ha accettato il messaggio. Controlla bot e ID chat."
+  ],
+  "Update failed: {}": [
+    "Ошибка обновления: {}",
+    "Échec de la mise à jour : {}",
+    "Update fehlgeschlagen: {}",
+    "Error de actualización: {}",
+    "Aggiornamento non riuscito: {}"
+  ]
+}

@@ -1,3 +1,4 @@
+use crate::i18n::tr;
 use crate::{
     model::{Delivery, reminder_text, was_delivered},
     platform::{Platform, unprotect},
@@ -20,24 +21,24 @@ pub fn http_agent() -> ureq::Agent {
 pub fn send_telegram(settings: &Settings, text: &str) -> Result<(), String> {
     let token = unprotect(&settings.telegram_token_protected)?;
     if token.is_empty() || settings.telegram_chat_id.trim().is_empty() {
-        return Err("Enter the Telegram bot token and chat ID in Settings.".into());
+        return Err(tr("Enter the Telegram bot token and chat ID in Settings.").into());
     }
     if !token
         .chars()
         .all(|c| c.is_ascii_alphanumeric() || c == ':' || c == '_' || c == '-')
     {
-        return Err("The Telegram bot token has an invalid format.".into());
+        return Err(tr("The Telegram bot token has an invalid format.").into());
     }
     let url = format!("https://api.telegram.org/bot{token}/sendMessage");
     // Do not display transport errors: they can contain the secret token in the URL.
     let mut response = http_agent().post(&url).send_json(serde_json::json!({"chat_id": settings.telegram_chat_id.trim(), "text": text}))
-        .map_err(|_| "Telegram delivery failed. Check the token, chat ID, network connection, and that you started the bot.".to_string())?;
+        .map_err(|_| tr("Telegram delivery failed. Check the token, chat ID, network connection, and that you started the bot.").to_string())?;
     let json: serde_json::Value = response
         .body_mut()
         .read_json()
-        .map_err(|_| "Telegram returned an invalid response".to_string())?;
+        .map_err(|_| tr("Telegram returned an invalid response").to_string())?;
     if json.get("ok").and_then(|x| x.as_bool()) != Some(true) {
-        return Err("Telegram did not accept the message. Check the bot and chat ID.".into());
+        return Err(tr("Telegram did not accept the message. Check the bot and chat ID.").into());
     }
     Ok(())
 }
@@ -95,7 +96,7 @@ fn tick(shared: &Arc<Mutex<Store>>, platform: &Platform) {
         let text = if windows.len() == 1 {
             reminder_text(windows[0], today)
         } else {
-            format!(
+            crate::trf!(
                 "{} subscriptions need attention: {}. Open the app for details.",
                 windows.len(),
                 windows
@@ -105,7 +106,7 @@ fn tick(shared: &Arc<Mutex<Store>>, platform: &Platform) {
                     .join(", ")
             )
         };
-        match platform.notify("Subscription reminder".into(), text) {
+        match platform.notify(tr("Subscription reminder").into(), text) {
             Ok(()) => {
                 for sub in windows {
                     record(shared, sub.id, sub.due, today, false);

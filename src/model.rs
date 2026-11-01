@@ -1,3 +1,4 @@
+use crate::i18n::tr;
 use chrono::{Days, Months, NaiveDate};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -22,11 +23,11 @@ impl Cycle {
     ];
     pub fn label(self) -> &'static str {
         match self {
-            Self::Monthly => "Monthly",
-            Self::Quarterly => "Quarterly",
-            Self::Yearly => "Yearly",
-            Self::Weekly => "Weekly",
-            Self::OneTime => "One time",
+            Self::Monthly => tr("Monthly"),
+            Self::Quarterly => tr("Quarterly"),
+            Self::Yearly => tr("Yearly"),
+            Self::Weekly => tr("Weekly"),
+            Self::OneTime => tr("One time"),
         }
     }
     pub fn next(self, date: NaiveDate) -> Option<NaiveDate> {
@@ -83,13 +84,13 @@ impl Subscription {
     }
     pub fn validate(&self) -> Result<(), String> {
         if self.name.trim().is_empty() {
-            return Err("Enter a subscription name.".into());
+            return Err(tr("Enter a subscription name.").into());
         }
         if self.name.chars().count() > 150 {
-            return Err("Use at most 150 characters for the name.".into());
+            return Err(tr("Use at most 150 characters for the name.").into());
         }
         if self.reminder_days > 365 {
-            return Err("Reminder lead time must be between 0 and 365 days.".into());
+            return Err(tr("Reminder lead time must be between 0 and 365 days.").into());
         }
         if !self.amount.trim().is_empty()
             && !self
@@ -97,10 +98,10 @@ impl Subscription {
                 .parse::<f64>()
                 .is_ok_and(|v| v.is_finite() && v >= 0.0)
         {
-            return Err("Enter a positive price (for example 9.99), or leave it empty.".into());
+            return Err(tr("Enter a positive price (for example 9.99), or leave it empty.").into());
         }
         if self.currency.len() > 12 {
-            return Err("Currency must be at most 12 characters.".into());
+            return Err(tr("Currency must be at most 12 characters.").into());
         }
         Ok(())
     }
@@ -165,11 +166,11 @@ pub fn was_delivered(
 pub fn reminder_text(sub: &Subscription, today: NaiveDate) -> String {
     let days = sub.days_left(today);
     let timing = if days < 0 {
-        format!("expired {} day(s) ago", -days)
+        crate::trf!("expired {} day(s) ago", -days)
     } else if days == 0 {
-        "expires today".into()
+        tr("expires today").into()
     } else {
-        format!("expires in {days} day(s)")
+        crate::trf!("expires in {} day(s)", days)
     };
     format!("{} {timing} ({}).", sub.name, sub.due)
 }
