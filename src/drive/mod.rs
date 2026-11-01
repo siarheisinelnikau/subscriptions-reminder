@@ -1,4 +1,3 @@
-use crate::i18n::tr;
 mod api;
 mod oauth;
 pub mod replica;
@@ -288,7 +287,7 @@ impl Default for Status {
     fn default() -> Self {
         Self {
             phase: Phase::Disconnected,
-            message: tr("Google Drive is not connected.").into(),
+            message: "Google Drive is not connected.".into(),
             browser_url: None,
             last_success: None,
             conflicts: vec![],
@@ -441,23 +440,23 @@ fn connect(
         status,
         ctx,
         Phase::Authorizing,
-        tr("Finish Google sign-in in your browser. The app remains usable."),
+        "Finish Google sign-in in your browser. The app remains usable.",
     );
     let token = oauth::sign_in(&client, cancel, &platform.quit, |url| {
         status.lock().unwrap().browser_url = Some(url);
         ctx.request_repaint();
     })?;
     if cancel.load(Ordering::SeqCst) {
-        return Err(Failure::data(tr("Google sign-in was cancelled.")));
+        return Err(Failure::data("Google sign-in was cancelled."));
     }
     let refresh = token.refresh.ok_or_else(|| {
-        Failure::sign_in(tr(
+        Failure::sign_in(
             "Google returned no offline session. Connect again and accept the consent screen.",
-        ))
+        )
     })?;
     let account = Google::new(token.access.clone()).account()?;
     if cancel.load(Ordering::SeqCst) {
-        return Err(Failure::data(tr("Google sign-in was cancelled.")));
+        return Err(Failure::data("Google sign-in was cancelled."));
     }
     // Pin the client to the saved session so a later release's bundled client
     // cannot silently change its token audience or Drive replication identity.
@@ -503,9 +502,9 @@ fn worker(
                     Command::Import(client) => {
                         let mut settings = shared.lock().unwrap().settings.drive.clone();
                         if settings.connected() {
-                            return Err(Failure::data(tr(
+                            return Err(Failure::data(
                                 "Disconnect this computer before changing its Google OAuth client.",
-                            )));
+                            ));
                         }
                         settings.remember_client(&client)?;
                         settings.needs_sign_in = false;
@@ -514,7 +513,7 @@ fn worker(
                             &status,
                             &ctx,
                             Phase::Disconnected,
-                            tr("OAuth client imported. Connect Google Drive to sign in."),
+                            "OAuth client imported. Connect Google Drive to sign in.",
                         );
                     }
                     Command::Connect => {
@@ -543,9 +542,7 @@ fn worker(
                             &status,
                             &ctx,
                             Phase::Disconnected,
-                            tr(
-                                "This computer is disconnected. Local subscriptions and Google Drive snapshots were retained.",
-                            ),
+                            "This computer is disconnected. Local subscriptions and Google Drive snapshots were retained.",
                         );
                     }
                     Command::Sync => {
@@ -561,16 +558,12 @@ fn worker(
                             &status,
                             &ctx,
                             Phase::Connected,
-                            tr(
-                                "Automatic synchronization is paused. Use Sync now to transfer changes.",
-                            ),
+                            "Automatic synchronization is paused. Use Sync now to transfer changes.",
                         );
                     }
                     Command::Resolve(conflict, choice) => {
                         let cp = checkpoint.as_mut().ok_or_else(|| {
-                            Failure::data(tr(
-                                "Connect Google Drive before resolving a cloud conflict.",
-                            ))
+                            Failure::data("Connect Google Drive before resolving a cloud conflict.")
                         })?;
                         let mut store = shared.lock().unwrap();
                         cp.capture_local(&mut store)?;
@@ -595,7 +588,7 @@ fn worker(
                         &status,
                         &ctx,
                         Phase::Setup,
-                        tr("Google sign-in is not configured in this build."),
+                        "Google sign-in is not configured in this build.",
                     );
                 }
                 return Ok(());
@@ -606,9 +599,7 @@ fn worker(
                         &status,
                         &ctx,
                         Phase::SignInRequired,
-                        tr(
-                            "Reconnect Google Drive to renew the session. Local changes are preserved.",
-                        ),
+                        "Reconnect Google Drive to renew the session. Local changes are preserved.",
                     );
                 }
                 return Ok(());
@@ -629,9 +620,7 @@ fn worker(
                         &status,
                         &ctx,
                         Phase::Connected,
-                        tr(
-                            "Automatic synchronization is paused. Use Sync now to transfer changes.",
-                        ),
+                        "Automatic synchronization is paused. Use Sync now to transfer changes.",
                     );
                 }
                 return Ok(());
@@ -647,7 +636,7 @@ fn worker(
                 &status,
                 &ctx,
                 Phase::Syncing,
-                tr("Synchronizing subscriptions and notes with Google Drive..."),
+                "Synchronizing subscriptions and notes with Google Drive...",
             );
             let backend = Google::new(access(&shared, &mut cache)?).cancellable(cancel.clone());
             synchronize(&shared, cp, &backend)?;
@@ -666,12 +655,9 @@ fn worker(
                 &ctx,
                 Phase::Connected,
                 if count == 0 {
-                    tr("Subscriptions and notes are synchronized.").into()
+                    "Subscriptions and notes are synchronized."
                 } else {
-                    crate::trf!(
-                        "Synchronized with {} unresolved conflict(s). Review their versions below; no version was discarded.",
-                        count
-                    )
+                    "Synchronized with {} unresolved conflict(s). Review their versions below; no version was discarded."
                 },
             );
             Ok(())

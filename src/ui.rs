@@ -385,7 +385,11 @@ impl App {
                         .inner_margin(egui::Margin::symmetric(6, 3))
                         .corner_radius(4)
                         .show(ui, |ui| {
-                            ui.label(RichText::new(label).size(11.0).color(color));
+                            ui.add(
+                                egui::Label::new(RichText::new(&label).size(11.0).color(color))
+                                    .truncate(),
+                            )
+                            .on_hover_text(&label);
                         });
                 });
                 ui.allocate_ui_with_layout(

@@ -65,6 +65,11 @@ impl SoftwareApp {
     fn initialize(&mut self, event_loop: &ActiveEventLoop) -> Result<()> {
         use winit::platform::windows::WindowAttributesExtWindows;
         let theme = self.store.lock().unwrap().settings.theme;
+        let isolated_render = self.diagnostic.is_some()
+            || self
+                .launch
+                .as_ref()
+                .is_some_and(|launch| launch.capture_dir.is_some());
         let window = Arc::new(
             event_loop.create_window(
                 Window::default_attributes()
@@ -75,13 +80,13 @@ impl SoftwareApp {
                     })
                     .with_inner_size(LogicalSize::new(1000.0, 760.0))
                     .with_min_inner_size(LogicalSize::new(820.0, 580.0))
-                    .with_active(self.diagnostic.is_none())
-                    .with_skip_taskbar(self.diagnostic.is_some())
+                    .with_active(!isolated_render)
+                    .with_skip_taskbar(isolated_render)
                     .with_visible(!self.hidden),
             )?,
         );
         configure_window_icons(&window)?;
-        if self.diagnostic.is_some() {
+        if isolated_render {
             use winit::platform::windows::WindowExtWindows;
             window.set_enable(false);
         }
