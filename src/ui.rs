@@ -1,3 +1,4 @@
+use crate::i18n::tr;
 use crate::{
     capture::Capture,
     drive,
@@ -57,6 +58,7 @@ impl App {
     ) -> Self {
         platform.bind(hwnd, ctx.clone());
         let draft = store.lock().unwrap().settings.clone();
+        draft.language.select();
         theme::install(ctx, draft.theme);
         let token = platform::unprotect(&draft.telegram_token_protected).unwrap_or_default();
         let updates = Arc::new(Mutex::new(updates::State::Idle));
@@ -113,7 +115,7 @@ impl App {
         self.notice = store
             .commit(db)
             .err()
-            .unwrap_or_else(|| "Expiry date renewed.".into());
+            .unwrap_or_else(|| tr("Expiry date renewed.").into());
     }
 
     fn toggle_active(&mut self, id: uuid::Uuid) {
@@ -125,7 +127,7 @@ impl App {
         self.notice = store
             .commit(db)
             .err()
-            .unwrap_or_else(|| "Subscription updated.".into());
+            .unwrap_or_else(|| tr("Subscription updated.").into());
     }
 
     fn list(&mut self, ui: &mut egui::Ui) {
@@ -134,24 +136,24 @@ impl App {
         let mut subs = self.store.lock().unwrap().db.subscriptions.clone();
         subs.sort_by_key(|sub| (!sub.active, sub.due, sub.name.to_lowercase()));
         ui.horizontal(|ui| {
-            ui.heading("Subscriptions");
+            ui.heading(tr("Subscriptions"));
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                if ui.button("Settings").clicked() {
+                if ui.button(tr("Settings")).clicked() {
                     self.page = 2;
                 }
                 if ui
-                    .add(colors.primary_button("+ Add subscription"))
+                    .add(colors.primary_button(tr("+ Add subscription")))
                     .clicked()
                 {
                     self.open_editor(Subscription::new(today), false);
                 }
-                if ui.button("Import image").clicked() {
+                if ui.button(tr("Import image")).clicked() {
                     self.page = 1;
                 }
             });
         });
         ui.label(
-            RichText::new(today.format("%A, %d %B %Y").to_string())
+            RichText::new(today.format("%Y-%m-%d").to_string())
                 .small()
                 .color(colors.muted),
         );
@@ -166,21 +168,21 @@ impl App {
                     for (count, label, color) in [
                         (
                             subs.iter().filter(|sub| sub.active).count(),
-                            "active",
+                            tr("active"),
                             colors.text,
                         ),
                         (
                             subs.iter()
                                 .filter(|sub| sub.active && (0..=7).contains(&sub.days_left(today)))
                                 .count(),
-                            "due within 7 days",
+                            tr("due within 7 days"),
                             colors.warning,
                         ),
                         (
                             subs.iter()
                                 .filter(|sub| sub.active && sub.days_left(today) < 0)
                                 .count(),
-                            "overdue",
+                            tr("overdue"),
                             colors.danger,
                         ),
                     ] {
@@ -192,13 +194,16 @@ impl App {
             });
         ui.add_space(7.0);
         ui.horizontal(|ui| {
-            for (filter, title) in ["All", "Needs attention", "Paused"].iter().enumerate() {
+            for (filter, title) in [tr("All"), tr("Needs attention"), tr("Paused")]
+                .iter()
+                .enumerate()
+            {
                 ui.selectable_value(&mut self.filter, filter, *title);
             }
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 ui.add(
                     egui::TextEdit::singleline(&mut self.search)
-                        .hint_text("Search name or notes")
+                        .hint_text(tr("Search name or notes"))
                         .desired_width(210.0),
                 );
             });
@@ -221,11 +226,13 @@ impl App {
         let widths = row_widths(ui.available_width() - 12.0);
         ui.horizontal(|ui| {
             ui.spacing_mut().item_spacing.x = 0.0;
-            for (width, title) in
-                widths
-                    .into_iter()
-                    .zip(["SUBSCRIPTION", "PRICE / PERIOD", "EXPIRES", "STATUS", ""])
-            {
+            for (width, title) in widths.into_iter().zip([
+                tr("SUBSCRIPTION"),
+                tr("PRICE / PERIOD"),
+                tr("EXPIRES"),
+                tr("STATUS"),
+                "",
+            ]) {
                 ui.allocate_ui_with_layout(
                     egui::vec2(width, 24.0),
                     egui::Layout::left_to_right(egui::Align::Center),
@@ -242,18 +249,18 @@ impl App {
             ui.add_space(28.0);
             ui.label(
                 RichText::new(if subs.is_empty() {
-                    "No subscriptions yet"
+                    tr("No subscriptions yet")
                 } else {
-                    "No matching subscriptions"
+                    tr("No matching subscriptions")
                 })
                 .size(15.0)
                 .strong(),
             );
             ui.label(
                 RichText::new(if subs.is_empty() {
-                    "Add a subscription or import a screenshot to get started."
+                    tr("Add a subscription or import a screenshot to get started.")
                 } else {
-                    "Try another search or filter."
+                    tr("Try another search or filter.")
                 })
                 .color(colors.muted),
             );
@@ -278,7 +285,7 @@ impl App {
         ui.add_space(5.0);
         ui.horizontal(|ui| {
             ui.label(
-                RichText::new(format!(
+                RichText::new(crate::trf!(
                     "{} of {} subscriptions · ordered by expiry",
                     filtered.len(),
                     subs.len()
@@ -289,19 +296,19 @@ impl App {
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 let status = self.drive.status();
                 let (label, color) = if !status.conflicts.is_empty() {
-                    ("Sync conflict · open Settings", colors.warning)
+                    (tr("Sync conflict · open Settings"), colors.warning)
                 } else {
                     match status.phase {
-                        drive::Phase::Connected => ("Drive connected", colors.muted),
-                        drive::Phase::Syncing => ("Synchronizing", colors.accent),
-                        drive::Phase::Offline => ("Drive offline", colors.warning),
-                        drive::Phase::SignInRequired => ("Drive needs sign-in", colors.warning),
+                        drive::Phase::Connected => (tr("Drive connected"), colors.muted),
+                        drive::Phase::Syncing => (tr("Synchronizing"), colors.accent),
+                        drive::Phase::Offline => (tr("Drive offline"), colors.warning),
+                        drive::Phase::SignInRequired => (tr("Drive needs sign-in"), colors.warning),
                         _ => ("", colors.muted),
                     }
                 };
                 if !label.is_empty() {
                     ui.label(RichText::new(label).small().color(color))
-                        .on_hover_text("Settings → Google Drive");
+                        .on_hover_text(tr("Settings → Google Drive"));
                 }
             });
         });
@@ -349,7 +356,7 @@ impl App {
                 cell(ui, widths[2], size, |ui| {
                     ui.label(sub.due.to_string());
                     ui.label(
-                        RichText::new(format!("Remind {}d before", sub.reminder_days))
+                        RichText::new(crate::trf!("Remind {}d before", sub.reminder_days))
                             .small()
                             .color(colors.muted),
                     );
@@ -357,15 +364,15 @@ impl App {
                 cell(ui, widths[3], size, |ui| {
                     let days = sub.days_left(today);
                     let (label, color) = if !sub.active {
-                        ("Paused".into(), colors.muted)
+                        (tr("Paused").into(), colors.muted)
                     } else if days < 0 {
-                        (format!("{}d overdue", -days), colors.danger)
+                        (crate::trf!("{}d overdue", -days), colors.danger)
                     } else if days == 0 {
-                        ("Due today".into(), colors.warning)
+                        (tr("Due today").into(), colors.warning)
                     } else if days <= sub.reminder_days as i64 {
-                        (format!("Due in {days}d"), colors.warning)
+                        (crate::trf!("Due in {}d", days), colors.warning)
                     } else {
-                        (format!("In {days} days"), colors.muted)
+                        (crate::trf!("In {} days", days), colors.muted)
                     };
                     ui.add_space(7.0);
                     egui::Frame::new()
@@ -387,21 +394,24 @@ impl App {
                     |ui| {
                         ui.spacing_mut().item_spacing.x = 4.0;
                         if ui
-                            .add_enabled(sub.cycle != Cycle::OneTime, egui::Button::new("Renew"))
-                            .on_hover_text("Advance the expiry by one billing period.")
+                            .add_enabled(
+                                sub.cycle != Cycle::OneTime,
+                                egui::Button::new(tr("Renew")),
+                            )
+                            .on_hover_text(tr("Advance the expiry by one billing period."))
                             .clicked()
                         {
                             self.renew(sub.id, today);
                         }
-                        if ui.button("Edit").clicked() {
+                        if ui.button(tr("Edit")).clicked() {
                             self.open_editor(sub.clone(), true);
                         }
                         ui.menu_button("···", |ui| {
                             if ui
                                 .button(if sub.active {
-                                    "Pause reminders"
+                                    tr("Pause reminders")
                                 } else {
-                                    "Resume reminders"
+                                    tr("Resume reminders")
                                 })
                                 .clicked()
                             {
@@ -410,7 +420,9 @@ impl App {
                             }
                             ui.separator();
                             if ui
-                                .button(RichText::new("Delete subscription").color(colors.danger))
+                                .button(
+                                    RichText::new(tr("Delete subscription")).color(colors.danger),
+                                )
                                 .clicked()
                             {
                                 self.delete = Some(sub.id);
@@ -448,14 +460,14 @@ impl App {
         ui.horizontal(|ui| {
             if ui
                 .button("←")
-                .on_hover_text("Back to subscriptions")
+                .on_hover_text(tr("Back to subscriptions"))
                 .clicked()
             {
                 self.page = 0;
             }
-            ui.heading("Settings");
+            ui.heading(tr("Settings"));
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                if ui.add(colors.primary_button("Save settings")).clicked() {
+                if ui.add(colors.primary_button(tr("Save settings"))).clicked() {
                     self.save_settings();
                 }
             });
@@ -463,11 +475,11 @@ impl App {
         ui.add_space(8.0);
         ui.horizontal(|ui| {
             for (index, label) in [
-                "General",
-                "AI provider",
-                "Notifications",
+                tr("General"),
+                tr("AI provider"),
+                tr("Notifications"),
                 "Google Drive",
-                "Storage & updates",
+                tr("Storage & updates"),
             ]
             .iter()
             .enumerate()
@@ -483,129 +495,144 @@ impl App {
         egui::ScrollArea::vertical().id_salt(("settings", self.settings_tab)).show(ui, |ui| {
             match self.settings_tab {
                 0 => {
-                    section(ui, "Appearance", |ui| {
+                    section(ui, tr("Appearance"), |ui| {
                         let previous_theme = self.draft.theme;
                         let previous_size = self.draft.subscription_size;
+                        let previous_language = self.draft.language;
                         egui::Grid::new("appearance").num_columns(2).spacing([18.0, 8.0]).show(ui, |ui| {
-                            ui.label("Theme");
+                            ui.label(tr("Language"));
+                            egui::ComboBox::from_id_salt("interface-language")
+                                .selected_text(self.draft.language.native_name())
+                                .show_ui(ui, |ui| {
+                                    for language in crate::i18n::Language::ALL {
+                                        ui.selectable_value(&mut self.draft.language, language, language.native_name());
+                                    }
+                                });
+                            ui.end_row();
+                            ui.label(tr("Theme"));
                             ui.horizontal(|ui| {
                                 for preference in theme::Preference::ALL {
                                     ui.selectable_value(&mut self.draft.theme, preference, preference.label());
                                 }
                             }); ui.end_row();
-                            ui.label("Subscription size");
+                            ui.label(tr("Subscription size"));
                             ui.horizontal(|ui| {
                                 for size in theme::SubscriptionSize::ALL {
                                     ui.selectable_value(&mut self.draft.subscription_size, size, size.label());
                                 }
                             }); ui.end_row();
                         });
-                        ui.label(RichText::new("Size controls row spacing. These appearance choices are saved immediately.").small().color(colors.muted));
-                        if self.draft.theme != previous_theme || self.draft.subscription_size != previous_size {
+                        ui.label(RichText::new(tr("Size controls row spacing. These appearance choices are saved immediately.")).small().color(colors.muted));
+                        if self.draft.theme != previous_theme || self.draft.subscription_size != previous_size || self.draft.language != previous_language {
                             let mut store = self.store.lock().unwrap();
                             let saved_theme = store.settings.theme;
                             let saved_size = store.settings.subscription_size;
+                            let saved_language = store.settings.language;
                             store.settings.theme = self.draft.theme;
                             store.settings.subscription_size = self.draft.subscription_size;
+                            store.settings.language = self.draft.language;
                             if let Err(error) = store.save_settings() {
                                 store.settings.theme = saved_theme;
                                 store.settings.subscription_size = saved_size;
+                                store.settings.language = saved_language;
                                 self.draft.theme = previous_theme;
                                 self.draft.subscription_size = previous_size;
+                                self.draft.language = previous_language;
                                 self.notice = error;
                             } else {
                                 drop(store);
+                                self.draft.language.select();
                                 if self.draft.theme != previous_theme { self.draft.theme.apply(ctx); }
                                 else { ctx.request_repaint(); }
                             }
                         }
                     });
-                    section(ui, "Startup", |ui| {
+                    section(ui, tr("Startup"), |ui| {
                         let previous = self.autostart;
-                        if ui.checkbox(&mut self.autostart, "Start with Windows").changed() {
+                        if ui.checkbox(&mut self.autostart, tr("Start with Windows")).changed() {
                             let config = self.store.lock().unwrap().config_dir.clone();
                             if let Err(error) = platform::set_autostart(self.autostart, &config) {
                                 self.notice = error; self.autostart = previous;
                             }
                         }
-                        ui.label(RichText::new("Starts in the system tray with reminders running.").small().color(colors.muted));
-                        ui.checkbox(&mut self.draft.startup_update_check, "Check for updates on startup");
-                        ui.label(RichText::new("Checks in the background. Downloads and installation require your action.").small().color(colors.muted));
+                        ui.label(RichText::new(tr("Starts in the system tray with reminders running.")).small().color(colors.muted));
+                        ui.checkbox(&mut self.draft.startup_update_check, tr("Check for updates on startup"));
+                        ui.label(RichText::new(tr("Checks in the background. Downloads and installation require your action.")).small().color(colors.muted));
                     });
                     ui.add_space(8.0);
-                    if ui.button("Quit application").clicked() { self.platform.request_quit(); }
+                    if ui.button(tr("Quit application")).clicked() { self.platform.request_quit(); }
                 }
-                1 => section(ui, "AI connection", |ui| self.importer.settings(ui, &mut self.draft.ai, ctx)),
+                1 => section(ui, tr("AI connection"), |ui| self.importer.settings(ui, &mut self.draft.ai, ctx)),
                 2 => {
-                    section(ui, "Windows reminders", |ui| {
+                    section(ui, tr("Windows reminders"), |ui| {
                         ui.horizontal(|ui| {
-                            ui.checkbox(&mut self.draft.windows_notifications, "Windows notifications");
-                            if ui.button("Send test").clicked() {
+                            ui.checkbox(&mut self.draft.windows_notifications, tr("Windows notifications"));
+                            if ui.button(tr("Send test")).clicked() {
                                 let platform = self.platform.clone(); let status = self.task_status.clone(); let ctx = ctx.clone();
                                 std::thread::spawn(move || {
-                                    *status.lock().unwrap() = Some(match platform.notify("Subscriptions Reminder".into(), "Your Windows reminders are ready.".into()) {
-                                        Ok(()) => "Test notification submitted to Windows.".into(), Err(error) => error,
+                                    *status.lock().unwrap() = Some(match platform.notify("Subscriptions Reminder".into(), tr("Your Windows reminders are ready.").into()) {
+                                        Ok(()) => tr("Test notification submitted to Windows.").into(), Err(error) => error,
                                     }); ctx.request_repaint();
                                 });
                             }
                         });
-                        ui.label(RichText::new("Checked every 30 seconds. Reminders repeat daily until renewed or paused.").small().color(colors.muted));
+                        ui.label(RichText::new(tr("Checked every 30 seconds. Reminders repeat daily until renewed or paused.")).small().color(colors.muted));
                     });
                     section(ui, "Telegram", |ui| {
-                        ui.checkbox(&mut self.draft.telegram_enabled, "Also send reminders to Telegram");
+                        ui.checkbox(&mut self.draft.telegram_enabled, tr("Also send reminders to Telegram"));
                         egui::Grid::new("telegram-settings").num_columns(2).spacing([16.0, 10.0]).show(ui, |ui| {
-                            ui.label("Bot token"); ui.add(egui::TextEdit::singleline(&mut self.token).password(true).desired_width(360.0)); ui.end_row();
-                            ui.label("Chat ID"); ui.add(egui::TextEdit::singleline(&mut self.draft.telegram_chat_id).desired_width(200.0)); ui.end_row();
+                            ui.label(tr("Bot token")); ui.add(egui::TextEdit::singleline(&mut self.token).password(true).desired_width(360.0)); ui.end_row();
+                            ui.label(tr("Chat ID")); ui.add(egui::TextEdit::singleline(&mut self.draft.telegram_chat_id).desired_width(200.0)); ui.end_row();
                         });
-                        ui.collapsing("Setup help", |ui| {
-                            ui.label("Create a bot with @BotFather, send /start in its chat, and enter the bot token and your chat ID. Save settings before testing.");
-                            ui.label("Credentials stay encrypted on this computer. Reminders send subscription names and dates to Telegram.");
+                        ui.collapsing(tr("Setup help"), |ui| {
+                            ui.label(tr("Create a bot with @BotFather, send /start in its chat, and enter the bot token and your chat ID. Save settings before testing."));
+                            ui.label(tr("Credentials stay encrypted on this computer. Reminders send subscription names and dates to Telegram."));
                         });
-                        if ui.button("Test saved Telegram connection").clicked() {
+                        if ui.button(tr("Test saved Telegram connection")).clicked() {
                             let settings = self.store.lock().unwrap().settings.clone(); let status = self.task_status.clone(); let ctx = ctx.clone();
                             std::thread::spawn(move || {
-                                *status.lock().unwrap() = Some(match reminders::send_telegram(&settings, "Subscriptions Reminder: your test reminder is working.") {
-                                    Ok(()) => "Telegram test delivered.".into(), Err(error) => error,
+                                *status.lock().unwrap() = Some(match reminders::send_telegram(&settings, tr("Subscriptions Reminder: your test reminder is working.")) {
+                                    Ok(()) => tr("Telegram test delivered.").into(), Err(error) => error,
                                 }); ctx.request_repaint();
                             });
                         }
                     });
                 }
                 _ => {
-                    section(ui, "Data & synchronization", |ui| {
+                    section(ui, tr("Data & synchronization"), |ui| {
                         ui.horizontal(|ui| {
                             ui.label("Google Drive");
-                            if ui.button("Manage connection").clicked() { self.settings_tab = 3; }
+                            if ui.button(tr("Manage connection")).clicked() { self.settings_tab = 3; }
                         });
                         let store = self.store.lock().unwrap();
                         let dir = store.settings.data_dir.clone();
                         let connected = store.settings.drive.connected();
                         drop(store);
-                        ui.label(RichText::new("Local offline copy").small().color(colors.muted));
+                        ui.label(RichText::new(tr("Local offline copy")).small().color(colors.muted));
                         ui.add(egui::Label::new(RichText::new(dir.display().to_string()).monospace().small()).truncate()).on_hover_text(dir.display().to_string());
-                        if ui.add_enabled(!connected, egui::Button::new("Change local data folder")).on_hover_text("Disconnect Google Drive before changing the local data folder.").clicked()
+                        if ui.add_enabled(!connected, egui::Button::new(tr("Change local data folder"))).on_hover_text(tr("Disconnect Google Drive before changing the local data folder.")).clicked()
                             && let Some(dir) = rfd::FileDialog::new().set_directory(&dir).pick_folder() {
                                 let mut store = self.store.lock().unwrap();
                                 self.notice = match store.use_folder(dir) {
-                                    Ok(()) => { self.draft.data_dir = store.settings.data_dir.clone(); "Data folder updated.".into() }, Err(error) => error,
+                                    Ok(()) => { self.draft.data_dir = store.settings.data_dir.clone(); tr("Data folder updated.").into() }, Err(error) => error,
                                 };
                             }
                     });
-                    section(ui, "Updates", |ui| {
+                    section(ui, tr("Updates"), |ui| {
                         ui.horizontal(|ui| {
-                            ui.label(format!("Version {} · Windows x64", updates::VERSION));
-                            if ui.button("Check for updates").clicked() { updates::check(self.updates.clone(), ctx.clone()); }
+                            ui.label(crate::trf!("Version {} · Windows x64", updates::VERSION));
+                            if ui.button(tr("Check for updates")).clicked() { updates::check(self.updates.clone(), ctx.clone()); }
                         });
                         let update_state = self.updates.lock().unwrap().clone();
                         match update_state {
                             updates::State::Idle => (),
-                            updates::State::Checking => { ui.label("Checking GitHub..."); },
-                            updates::State::Current => { ui.label("You are up to date."); },
-                            updates::State::Error(error) => { ui.colored_label(colors.warning, error); },
-                            updates::State::Downloading(progress) => { ui.add(egui::ProgressBar::new(progress).show_percentage().text("Downloading and verifying update...")); },
+                            updates::State::Checking => { ui.label(tr("Checking GitHub...")); },
+                            updates::State::Current => { ui.label(tr("You are up to date.")); },
+                            updates::State::Error(error) => { ui.colored_label(colors.warning, crate::trf!("Update failed: {}", error)); },
+                            updates::State::Downloading(progress) => { ui.add(egui::ProgressBar::new(progress).show_percentage().text(tr("Downloading and verifying update..."))); },
                             updates::State::Available(release) => {
-                                ui.colored_label(colors.accent, format!("Version {} is available.", release.version));
-                                if ui.add(colors.primary_button("Download and install")).clicked() {
+                                ui.colored_label(colors.accent, crate::trf!("Version {} is available.", release.version));
+                                if ui.add(colors.primary_button(tr("Download and install"))).clicked() {
                                     let config = self.store.lock().unwrap().config_dir.clone();
                                     updates::install(release, self.updates.clone(), ctx.clone(), self.platform.clone(), config);
                                 }
@@ -623,9 +650,10 @@ impl App {
             if self.draft.telegram_enabled
                 && (self.token.trim().is_empty() || self.draft.telegram_chat_id.trim().is_empty())
             {
-                return Err(
-                    "Enter a Telegram token and chat ID, or disable Telegram reminders.".into(),
-                );
+                return Err(tr(
+                    "Enter a Telegram token and chat ID, or disable Telegram reminders.",
+                )
+                .into());
             }
             self.draft.telegram_token_protected = platform::protect(self.token.trim())?;
             let mut store = self.store.lock().unwrap();
@@ -641,7 +669,7 @@ impl App {
             }
             Ok(())
         })();
-        self.notice = result.err().unwrap_or_else(|| "Settings saved.".into());
+        self.notice = result.err().unwrap_or_else(|| tr("Settings saved.").into());
     }
 
     fn editor(&mut self, ctx: &egui::Context) {
@@ -651,38 +679,38 @@ impl App {
         };
         let mut open = true;
         let mut finished = false;
-        egui::Window::new(if editor.original.is_some() { "Edit subscription" } else { "Add subscription" }).id(egui::Id::new("editor"))
+        egui::Window::new(if editor.original.is_some() { tr("Edit subscription") } else { tr("Add subscription") }).id(egui::Id::new("editor"))
             .open(&mut open).collapsible(false).resizable(false).default_width(450.).anchor(egui::Align2::CENTER_CENTER, [0., 0.]).show(ctx, |ui| {
-                ui.label("Subscription name"); ui.add(egui::TextEdit::singleline(&mut editor.sub.name).desired_width(f32::INFINITY));
+                ui.label(tr("Subscription name")); ui.add(egui::TextEdit::singleline(&mut editor.sub.name).desired_width(f32::INFINITY));
                 ui.horizontal(|ui| {
-                    ui.vertical(|ui| { ui.label("Expiry date (YYYY-MM-DD)"); ui.add(egui::TextEdit::singleline(&mut editor.date).desired_width(180.)); });
-                    ui.vertical(|ui| { ui.label("Remind days before"); ui.add(egui::DragValue::new(&mut editor.sub.reminder_days).range(0..=365)); });
+                    ui.vertical(|ui| { ui.label(tr("Expiry date (YYYY-MM-DD)")); ui.add(egui::TextEdit::singleline(&mut editor.date).desired_width(180.)); });
+                    ui.vertical(|ui| { ui.label(tr("Remind days before")); ui.add(egui::DragValue::new(&mut editor.sub.reminder_days).range(0..=365)); });
                 });
-                ui.label("Billing period");
+                ui.label(tr("Billing period"));
                 egui::ComboBox::from_id_salt("cycle").selected_text(editor.sub.cycle.label()).show_ui(ui, |ui| { for cycle in Cycle::ALL { ui.selectable_value(&mut editor.sub.cycle, cycle, cycle.label()); } });
                 ui.horizontal(|ui| {
-                    ui.vertical(|ui| { ui.label("Price (optional)"); ui.add(egui::TextEdit::singleline(&mut editor.sub.amount).desired_width(150.)); });
-                    ui.vertical(|ui| { ui.label("Currency"); ui.add(egui::TextEdit::singleline(&mut editor.sub.currency).desired_width(80.)); });
+                    ui.vertical(|ui| { ui.label(tr("Price (optional)")); ui.add(egui::TextEdit::singleline(&mut editor.sub.amount).desired_width(150.)); });
+                    ui.vertical(|ui| { ui.label(tr("Currency")); ui.add(egui::TextEdit::singleline(&mut editor.sub.currency).desired_width(80.)); });
                 });
-                ui.label("Notes"); ui.add(egui::TextEdit::multiline(&mut editor.sub.notes).desired_rows(3).desired_width(f32::INFINITY));
-                ui.checkbox(&mut editor.sub.active, "Active reminders");
-                if !editor.error.is_empty() { ui.colored_label(colors.warning, &editor.error); }
+                ui.label(tr("Notes")); ui.add(egui::TextEdit::multiline(&mut editor.sub.notes).desired_rows(3).desired_width(f32::INFINITY));
+                ui.checkbox(&mut editor.sub.active, tr("Active reminders"));
+                if !editor.error.is_empty() { ui.colored_label(colors.warning, tr(&editor.error)); }
                 ui.horizontal(|ui| {
-                    if ui.add(colors.primary_button("Save subscription")).clicked() {
+                    if ui.add(colors.primary_button(tr("Save subscription"))).clicked() {
                         let result = (|| -> Result<(), String> {
-                            editor.sub.due = chrono::NaiveDate::parse_from_str(editor.date.trim(), "%Y-%m-%d").map_err(|_| "Enter a valid expiry date as YYYY-MM-DD.".to_string())?;
+                            editor.sub.due = chrono::NaiveDate::parse_from_str(editor.date.trim(), "%Y-%m-%d").map_err(|_| tr("Enter a valid expiry date as YYYY-MM-DD.").to_string())?;
                             editor.sub.name = editor.sub.name.trim().into(); editor.sub.amount = editor.sub.amount.trim().into();
                             editor.sub.validate()?;
                             let mut store = self.store.lock().unwrap(); store.refresh()?;
                             if let Some(original) = &editor.original
-                                && store.db.subscriptions.iter().find(|s| s.id == original.id) != Some(original) { return Err("This subscription changed outside the editor. Close this editor and open it again.".into()); }
+                                && store.db.subscriptions.iter().find(|s| s.id == original.id) != Some(original) { return Err(tr("This subscription changed outside the editor. Close this editor and open it again.").into()); }
                             let mut db = store.db.clone();
                             if let Some(item) = db.subscriptions.iter_mut().find(|s| s.id == editor.sub.id) { *item = editor.sub.clone(); } else { db.subscriptions.push(editor.sub.clone()); }
                             store.commit(db)
                         })();
-                        match result { Ok(()) => { finished = true; self.notice = "Subscription saved.".into(); }, Err(e) => editor.error = e }
+                        match result { Ok(()) => { finished = true; self.notice = tr("Subscription saved.").into(); }, Err(e) => editor.error = e }
                     }
-                    if ui.button("Cancel").clicked() { finished = true; }
+                    if ui.button(tr("Cancel")).clicked() { finished = true; }
                 });
             });
         if open && !finished {
@@ -692,7 +720,8 @@ impl App {
 }
 
 fn row_widths(width: f32) -> [f32; 5] {
-    [(width - 468.0).max(150.0), 108.0, 112.0, 102.0, 146.0]
+    // Leave room for translated actions and status labels at the minimum width.
+    [(width - 530.0).max(150.0), 110.0, 122.0, 118.0, 180.0]
 }
 
 fn cell(
@@ -793,8 +822,8 @@ impl App {
                     matches!(*self.updates.lock().unwrap(), updates::State::Available(_));
                 if available && self.page != 2 {
                     ui.horizontal(|ui| {
-                        ui.colored_label(colors.accent, "A new version is available.");
-                        if ui.button("View update").clicked() {
+                        ui.colored_label(colors.accent, tr("A new version is available."));
+                        if ui.button(tr("View update")).clicked() {
                             self.page = 2;
                             self.settings_tab = 4;
                         }
@@ -803,8 +832,8 @@ impl App {
                 }
                 if !self.notice.is_empty() {
                     ui.horizontal_wrapped(|ui| {
-                        ui.colored_label(colors.warning, &self.notice);
-                        if ui.small_button("Dismiss").clicked() {
+                        ui.colored_label(colors.warning, tr(&self.notice));
+                        if ui.small_button(tr("Dismiss")).clicked() {
                             self.notice.clear();
                         }
                     });
@@ -825,26 +854,26 @@ impl App {
             });
         self.editor(ctx);
         if let Some(id) = self.delete {
-            egui::Window::new("Delete subscription?")
+            egui::Window::new(tr("Delete subscription?"))
                 .collapsible(false)
                 .resizable(false)
                 .anchor(egui::Align2::CENTER_CENTER, [0., 0.])
                 .show(ctx, |ui| {
-                    ui.label(
+                    ui.label(tr(
                         "This removes the subscription and its notes from the current data file.",
-                    );
+                    ));
                     ui.horizontal(|ui| {
-                        if ui.button("Delete").clicked() {
+                        if ui.button(tr("Delete")).clicked() {
                             let mut store = self.store.lock().unwrap();
                             let mut db = store.db.clone();
                             db.subscriptions.retain(|s| s.id != id);
                             self.notice = match store.commit(db) {
-                                Ok(()) => "Subscription deleted.".into(),
+                                Ok(()) => tr("Subscription deleted.").into(),
                                 Err(e) => e,
                             };
                             self.delete = None;
                         }
-                        if ui.button("Cancel").clicked() {
+                        if ui.button(tr("Cancel")).clicked() {
                             self.delete = None;
                         }
                     });

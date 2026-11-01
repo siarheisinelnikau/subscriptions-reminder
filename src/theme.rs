@@ -1,3 +1,4 @@
+use crate::i18n::tr;
 use egui::{Color32, Context, FontId, RichText, Stroke, Theme, ThemePreference, Visuals};
 use serde::{Deserialize, Serialize};
 
@@ -15,9 +16,9 @@ impl Preference {
 
     pub fn label(self) -> &'static str {
         match self {
-            Self::System => "System",
-            Self::Dark => "Dark",
-            Self::Light => "Light",
+            Self::System => tr("System"),
+            Self::Dark => tr("Dark"),
+            Self::Light => tr("Light"),
         }
     }
 
@@ -53,9 +54,9 @@ impl SubscriptionSize {
 
     pub fn label(self) -> &'static str {
         match self {
-            Self::Compact => "Compact",
-            Self::Standard => "Standard",
-            Self::Large => "Large",
+            Self::Compact => tr("Compact"),
+            Self::Standard => tr("Standard"),
+            Self::Large => tr("Large"),
         }
     }
 

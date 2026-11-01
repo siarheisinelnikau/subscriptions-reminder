@@ -1,3 +1,4 @@
+use crate::i18n::tr;
 use std::{
     collections::VecDeque,
     ffi::c_void,
@@ -242,10 +243,10 @@ unsafe extern "system" fn window_proc(hwnd: HWND, msg: u32, w: WPARAM, l: LPARAM
                         menu,
                         MF_STRING,
                         1,
-                        wide("Open Subscriptions Reminder").as_ptr(),
+                        wide(tr("Open Subscriptions Reminder")).as_ptr(),
                     );
                     AppendMenuW(menu, MF_SEPARATOR, 0, null());
-                    AppendMenuW(menu, MF_STRING, 2, wide("Quit").as_ptr());
+                    AppendMenuW(menu, MF_STRING, 2, wide(tr("Quit")).as_ptr());
                     let mut point = POINT { x: 0, y: 0 };
                     GetCursorPos(&mut point);
                     SetForegroundWindow(hwnd);

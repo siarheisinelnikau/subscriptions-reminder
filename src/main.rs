@@ -4,6 +4,7 @@ mod ai;
 mod capture;
 mod drive;
 mod event_loop;
+mod i18n;
 #[cfg(test)]
 mod icons;
 mod import_ui;
@@ -77,6 +78,11 @@ fn run(args: &[String]) -> Result<(), String> {
     {
         return Err("Diagnostics require --demo and an explicit isolated --data-dir.".into());
     }
+    if launch.capture_dir.is_some()
+        && (!args.iter().any(|s| s == "--data-dir") || !args.iter().any(|s| s == "--demo"))
+    {
+        return Err("Capture requires --demo and an explicit isolated --data-dir.".into());
+    }
     fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
     let config_dir = config_dir.canonicalize().map_err(|e| e.to_string())?;
     let identity = format!(
@@ -138,6 +144,36 @@ fn run(args: &[String]) -> Result<(), String> {
         store.settings.startup_update_check = false;
         store.save_settings()?;
     }
+    if launch.capture_dir.is_some() {
+        // Capture choices affect only the isolated fixture, never ordinary settings.
+        if let Some(index) = args.iter().position(|s| s == "--capture-language") {
+            store.settings.language = match args.get(index + 1).map(String::as_str) {
+                Some("en") => i18n::Language::English,
+                Some("ru") => i18n::Language::Russian,
+                Some("fr") => i18n::Language::French,
+                Some("de") => i18n::Language::German,
+                Some("es") => i18n::Language::Spanish,
+                Some("it") => i18n::Language::Italian,
+                _ => {
+                    return Err("Unknown --capture-language; use en, ru, fr, de, es, or it.".into());
+                }
+            };
+        }
+        if let Some(index) = args.iter().position(|s| s == "--capture-theme") {
+            store.settings.theme = match args.get(index + 1).map(String::as_str) {
+                Some("light") => theme::Preference::Light,
+                Some("dark") => theme::Preference::Dark,
+                Some("system") => theme::Preference::System,
+                _ => return Err("Unknown --capture-theme; use light, dark, or system.".into()),
+            };
+        }
+        store.settings.windows_notifications = false;
+        store.settings.telegram_enabled = false;
+        store.settings.startup_update_check = false;
+        store.settings.drive = Default::default();
+        store.settings.ai.enabled = false;
+    }
+    store.settings.language.select();
     let store = Arc::new(Mutex::new(store));
     let platform = platform::Platform::start(identity)?;
     if let Some(index) = args.iter().position(|s| s == "--cleanup-update") {
