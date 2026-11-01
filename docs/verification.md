@@ -66,3 +66,24 @@ All nine final EXE icon resources were decoded, checked for nonblank alpha/trans
 ![Window and taskbar icon handles matching executable resources](screenshots/icon-assignment.png)
 
 ![Production tray resource loaded with the native small-icon metric](screenshots/tray-metric.png)
+
+## v0.6.0 localization and appearance (2026-11-01)
+
+The six-language catalog contains 236 explicit messages, with English as the complete default and fallback. All 42 Rust tests passed with `cargo test --locked --offline --all-targets`; the three opt-in desktop input tests remained ignored. New regressions check every explicit UI catalog key, nonempty translations and interpolation slots, unknown/user-data preservation, language serialization, and migration of older settings without losing their theme or startup-update preference. Formatting, all-target Clippy with warnings denied, an optimized build, and packaging passed.
+
+The main/settings/import/Drive/editor, tray actions, reminder copy, theme and row-size names, and update controls use explicit lookups. The UI-literal audit leaves only stable widget IDs, product/service names, URLs, extensions, model IDs, and ISO date patterns. Technical service and operating-system error details remain untouched. Saved language and appearance changes request a finite repaint; they introduce no timer or polling loop. Google Drive stores canonical status messages for immediate retranslation.
+
+The final optimized `dist/SubscriptionsReminder-v0.6.0.exe` diagnostic used PID **40548** and exited normally after its finite 16.5-second lifecycle. Source inspection and runtime diagnostics identify **egui CPU software rasterization → softbuffer Win32 GDI**. The selected runtime module query returned only `gdi32.dll` among the checked graphics backends.
+
+| Settled state | Sample | CPU, one core | CPU, machine | Layouts / rasters / presents |
+| --- | --- | --- | --- | --- |
+| Visible idle | 5.00 s | 0.000% | 0.0000% | 0 / 0 / 0 |
+| Minimized | 2.00 s | 0.000% | 0.0000% | 0 / 0 / 0 |
+| Restored idle | 3.00 s | 0.000% | 0.0000% | 0 / 0 / 0 |
+| Hidden | 2.00 s | 0.781% | 0.0391% | 0 / 0 / 0 |
+
+CPU values use quantized Windows process times across 20 logical cores. Hidden and minimized background repaint requests skipped all UI work. Restore produced useful frames before settling. Native icon verification decoded all nine embedded sizes and checked actual assigned 16×16 and 32×32 window icons and the 16×16 production tray-resource handle against this exact diagnostic process. These results do not measure compositor/GPU telemetry, physical tray clicks, or keyboard/input latency.
+
+Bounded production-renderer captures produced all eight real screens at 1000×760 for English/Dark, German/Light, and Russian/Dark. All three final processes exited successfully in under one second each, with separate disposable demo stores and updates, notifications, AI, and Drive requests disabled. Capture windows stay inactive, skip the taskbar, and reject external input. The shared diagnostic mutex prevented overlap with other projects' visible tests.
+
+Actual primary/settings PNGs were inspected in those languages and themes, with representative editor, Drive, and image-import screens. The review found wrapping Russian status badges in fixed-height rows; shorter copy and truncation with a full-text tooltip corrected it, and the affected primary views were recaptured. The README main, General settings, editor, Light theme, and Russian settings images come from the final executable. Existing unchanged populated image-import captures remain labeled demonstration data. French, Spanish, and Italian have complete catalog/placeholder coverage but did not receive a separate screenshot review in this run. Mouse-driven language/theme switching, physical tray behavior, account-backed Google/Telegram/AI requests, and an updater installation round-trip were not exercised.

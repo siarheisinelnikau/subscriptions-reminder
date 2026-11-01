@@ -22,6 +22,7 @@ A small Rust desktop app that keeps subscription expiry dates out of your head. 
 - Check for updates and download, verify, install, and restart from Settings.
 - Render on the CPU and present through Windows GDI, with event-driven redraws and no OpenGL or DirectX context.
 - Choose a neutral Light or Dark theme, or follow Windows with System mode.
+- Use the complete interface in English, Russian, French, German, Spanish, or Italian, including tray actions and reminders.
 
 ## Compact workspace
 
@@ -31,7 +32,7 @@ Settings are divided into **General**, **AI provider**, **Notifications**, **Goo
 
 ## Getting started
 
-1. Download `SubscriptionsReminder-v0.5.0.exe` from [Releases](https://github.com/siarheisinelnikau/subscriptions-reminder/releases).
+1. Download `SubscriptionsReminder-v0.6.0.exe` from [Releases](https://github.com/siarheisinelnikau/subscriptions-reminder/releases).
 2. Put it in a writable folder where you plan to keep it, then launch it.
 3. Click **Add subscription**. Enter its name, expiry date (`YYYY-MM-DD`), and reminder lead time.
 4. In **Settings → General**, optionally enable **Start with Windows**. Closing the window keeps the app running; use the tray icon or launch the EXE again to reopen it. **Quit application** in General or the tray menu stops reminders.
@@ -46,11 +47,15 @@ The computer must be on, you must be signed in, and the app must be running for 
 
 Open **Settings → General → Appearance** and choose **System**, **Dark**, or **Light**. The choice applies immediately and is saved on this computer without clicking Save settings. System is the default and follows Windows app appearance through native theme-change events. Theme changes do not change subscriptions or cloud data.
 
+The **Language** menu uses native names: **English**, **Русский**, **Français**, **Deutsch**, **Español**, and **Italiano**. Language changes also apply and save immediately, without restarting. English remains the complete default for new and older settings; unknown language preferences fall back to English. The language choice stays on this computer. Subscription names, notes, currencies, model IDs, and file paths keep their original content. Technical service and operating-system error details may remain in their original language.
+
 The dark palette and typography follow Multi-Monitor Brightness, with Segoe UI at 13 px for body text and 12 px for buttons; the light palette uses white and gray surfaces with contrasting text and status colors. Both themes cover the subscription table, settings, image import, dialogs, and Google Drive screen. The native title bar follows the selected appearance too.
 
 **Subscription size** offers **Compact**, **Standard**, and **Large** rows with 48, 64, and 80 logical pixels of height. The choice changes spacing while retaining the readable text size, applies immediately, and is saved locally. Compact is the default for existing and new settings without a saved size.
 
-![Light theme dashboard with demonstration subscriptions](docs/screenshots/theme-light.png)
+![German interface in Light theme with original demonstration subscription names](docs/screenshots/theme-light.png)
+
+![Russian General settings with immediate language and theme choices](docs/screenshots/language-russian.png)
 
 ## Settings and Telegram
 
@@ -142,7 +147,7 @@ The packaged EXE and `SHA256SUMS.txt` appear in `dist/`. The MSVC C runtime is s
 For isolated UI testing, use a separate local settings directory:
 
 ```powershell
-./dist/SubscriptionsReminder-v0.5.0.exe --data-dir ./target/manual-test --demo
+./dist/SubscriptionsReminder-v0.6.0.exe --data-dir ./target/manual-test --demo
 ```
 
 `--demo` inserts twelve sample subscriptions into an empty data store and disables automatic update checks and reminder notifications for that demo store. `--background` starts with the main window hidden. Instances share one window and monitor per settings directory.
@@ -150,13 +155,13 @@ For isolated UI testing, use a separate local settings directory:
 The opt-in native desktop regressions exercise the packaged EXE, actual window handles, and tray callback dispatch on an interactive Windows desktop:
 
 ```powershell
-$env:SUBSCRIPTIONS_GUI_EXE = (Resolve-Path ./dist/SubscriptionsReminder-v0.5.0.exe).Path
+$env:SUBSCRIPTIONS_GUI_EXE = (Resolve-Path ./dist/SubscriptionsReminder-v0.6.0.exe).Path
 cargo test --locked --test desktop -- --ignored --nocapture --test-threads=1
 ```
 
 Set `SUBSCRIPTIONS_RENDER_TRACE` to a local JSONL file to collect frame timings and counts. Batches are written outside the UI thread and contain performance measurements only. Tracing is disabled by default.
 
-`--image PATH` opens an image in the import view. Add `--recognize` to start recognition using the saved AI connection. For cursor-free documentation screenshots, `--capture-dir PATH` captures the actual subscription table, all five Settings tabs, image import, and the subscription editor, then exits. When recognition is active, the import capture waits for its result and saves a local `recognition.json` report alongside the PNGs.
+`--image PATH` opens an image in the import view. Add `--recognize` to start recognition using the saved AI connection. For cursor-free documentation screenshots, `--capture-dir PATH --demo --data-dir ISOLATED_PATH` captures the actual subscription table, all five Settings tabs, image import, and the subscription editor, then exits. Capture mode requires an explicit isolated demo directory and disables update checks, notifications, AI requests, and Google Drive for that run. Optional `--capture-language en|ru|fr|de|es|it` and `--capture-theme system|light|dark` select representative localized states without changing ordinary settings.
 
 The Windows workflow checks formatting, runs tests and Clippy, builds the EXE, and packages checksums. On `main`, a package version without a published release is published with `docs/releases/vVERSION.md` as its description. Existing published releases are never modified. Review and update the release notes before increasing the package version.
 
