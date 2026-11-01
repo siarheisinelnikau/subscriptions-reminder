@@ -19,13 +19,23 @@ impl Panel {
         ui.add_space(10.);
         let settings = shared.lock().unwrap().settings.drive.clone();
         let status = drive.status();
+        let status_message = if status.message
+            == "Synchronized with {} unresolved conflict(s). Review their versions below; no version was discarded."
+        {
+            crate::trf!(
+                "Synchronized with {} unresolved conflict(s). Review their versions below; no version was discarded.",
+                status.conflicts.len()
+            )
+        } else {
+            tr(&status.message).to_owned()
+        };
         let signing_in = status.phase == Phase::Authorizing;
         let syncing = status.phase == Phase::Syncing;
         let bundled = oauth::Client::bundled().ok().flatten();
         egui::ScrollArea::vertical().id_salt("drive-panel").show(ui, |ui| {
             frame(ui, tr("Connection"), |ui| {
                 if settings.connected() { ui.label(RichText::new(&settings.account_label).strong()); }
-                ui.colored_label(if matches!(status.phase, Phase::Offline | Phase::SignInRequired) { Palette::for_ui(ui).warning } else { Palette::for_ui(ui).accent }, tr(&status.message));
+                ui.colored_label(if matches!(status.phase, Phase::Offline | Phase::SignInRequired) { Palette::for_ui(ui).warning } else { Palette::for_ui(ui).accent }, &status_message);
                 if let Some(last) = status.last_success { ui.label(crate::trf!("Last synchronized: {}", last.with_timezone(&chrono::Local).format("%Y-%m-%d %H:%M:%S"))); }
                 if status.pending { ui.label(tr("Local changes are waiting to be uploaded.")); }
                 if syncing { ui.spinner(); }

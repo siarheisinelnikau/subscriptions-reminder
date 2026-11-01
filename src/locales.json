@@ -196,7 +196,7 @@
     "Ricorda {} g prima"
   ],
   "{}d overdue": [
-    "Просрочено на {} дн.",
+    "Просрочка: {} дн.",
     "{} j de retard",
     "{} T. überfällig",
     "{} d de retraso",
@@ -210,7 +210,7 @@
     "Scade oggi"
   ],
   "Due in {}d": [
-    "Истекает через {} дн.",
+    "Через {} дн.",
     "Échéance dans {} j",
     "In {} T. fällig",
     "Vence en {} d",

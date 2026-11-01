@@ -123,6 +123,30 @@ mod tests {
     }
 
     #[test]
+    fn every_explicit_ui_message_has_a_translation_catalog_entry() {
+        for source in [
+            include_str!("ui.rs"),
+            include_str!("import_ui.rs"),
+            include_str!("drive/ui.rs"),
+            include_str!("drive/mod.rs"),
+            include_str!("model.rs"),
+            include_str!("theme.rs"),
+            include_str!("platform.rs"),
+            include_str!("reminders.rs"),
+        ] {
+            for prefix in ["tr(", "trf!("] {
+                for (offset, _) in source.match_indices(prefix) {
+                    let rest = source[offset + prefix.len()..].trim_start();
+                    if let Some(literal) = rest.strip_prefix('"') {
+                        let key = literal.split('"').next().unwrap();
+                        assert!(catalog().contains_key(key), "uncataloged UI message: {key}");
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
     fn user_data_and_unknown_messages_are_preserved() {
         let name = "Settings / subscriptions {example}";
         assert_eq!(Language::Russian.translate(name), name);
