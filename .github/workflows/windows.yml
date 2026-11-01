@@ -51,7 +51,7 @@ jobs:
         shell: pwsh
         run: ./scripts/package.ps1
       - name: Publish a new version
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_release && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && ((github.event_name == 'workflow_dispatch' && inputs.publish_release) || (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Release localization v')))
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
