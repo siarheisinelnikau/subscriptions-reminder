@@ -1,0 +1,12 @@
+{
+  "repository": "siarheisinelnikau/subscriptions-reminder",
+  "product": "SubscriptionsReminder",
+  "kind": "desktop",
+  "assets": [
+    {
+      "name": "SubscriptionsReminder-v{version}.exe"
+    }
+  ],
+  "notices": false,
+  "checksum_aliases": []
+}

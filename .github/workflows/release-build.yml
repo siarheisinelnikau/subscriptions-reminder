@@ -1,0 +1,50 @@
+name: Checked release builds
+'on':
+  workflow_call:
+    secrets:
+      GOOGLE_DESKTOP_OAUTH_JSON:
+        required: true
+permissions:
+  contents: read
+env:
+  CARGO_BUILD_JOBS: '2'
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        persist-credentials: false
+    - name: Provision shared updater source
+      shell: pwsh
+      run: ./scripts/provision-shared-updater.ps1
+    - name: Set up Rust
+      shell: pwsh
+      run: |
+        rustup toolchain install 1.96.1 --profile minimal --component rustfmt,clippy
+        rustup default 1.96.1
+    - name: Check formatting
+      run: cargo fmt --all -- --check
+    - name: Run tests
+      run: cargo test --locked
+    - name: Check code
+      run: cargo clippy --locked --all-targets -- -D warnings
+    - name: Build portable executable
+      env:
+        SUBSCRIPTIONS_GOOGLE_OAUTH_JSON: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+          && secrets.GOOGLE_DESKTOP_OAUTH_JSON || '' }}
+        SUBSCRIPTIONS_REQUIRE_GOOGLE_OAUTH: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+          && '1' || '' }}
+      run: cargo build --release --locked
+    - name: Package executable and checksums
+      shell: pwsh
+      run: ./scripts/package.ps1
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+      with:
+        name: SubscriptionsReminder-checked
+        path: dist/*
+        if-no-files-found: error
+        retention-days: 14
